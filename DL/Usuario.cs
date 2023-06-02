@@ -29,7 +29,11 @@ public partial class Usuario
 
     public byte[]? FotoRegistro { get; set; }
 
+    public int? IdArea { get; set; }
+
     public int? IdUsuarioModificacion { get; set; }
+
+    public virtual Area? IdAreaNavigation { get; set; }
 
     public virtual Usuario? IdUsuarioModificacionNavigation { get; set; }
 

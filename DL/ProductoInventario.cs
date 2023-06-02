@@ -11,5 +11,7 @@ public partial class ProductoInventario
 
     public int? Cantidad { get; set; }
 
+    public DateTime? Fecha { get; set; }
+
     public virtual Producto? IdProductoNavigation { get; set; }
 }

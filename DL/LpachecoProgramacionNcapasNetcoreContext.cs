@@ -15,6 +15,8 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
     {
     }
 
+    public virtual DbSet<Area> Areas { get; set; }
+
     public virtual DbSet<Departamento> Departamentos { get; set; }
 
     public virtual DbSet<Marca> Marcas { get; set; }
@@ -33,13 +35,24 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.; Database= LPachecoProgramacionNCapasNETCore; TrustServerCertificate=True; Trusted_Connection=True; User ID=sa; Password=pass@word1;");
+        => optionsBuilder.UseSqlServer("Server=.; Database=LPachecoProgramacionNCapasNETCore; TrustServerCertificate=True; Trusted_Connection=True; User ID=sa; Password=pass@word1;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Area>(entity =>
+        {
+            entity.HasKey(e => e.IdArea).HasName("PK__Area__2FC141AA44F16CA8");
+
+            entity.ToTable("Area");
+
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<Departamento>(entity =>
         {
-            entity.HasKey(e => e.IdDepartamento).HasName("PK__Departam__787A433DBEBC202D");
+            entity.HasKey(e => e.IdDepartamento).HasName("PK__Departam__787A433DBB7D0A40");
 
             entity.ToTable("Departamento");
 
@@ -50,7 +63,7 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
         modelBuilder.Entity<Marca>(entity =>
         {
-            entity.HasKey(e => e.IdMarca).HasName("PK__Marca__4076A887863D86D6");
+            entity.HasKey(e => e.IdMarca).HasName("PK__Marca__4076A887F5FFF3A9");
 
             entity.ToTable("Marca");
 
@@ -61,7 +74,7 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
         modelBuilder.Entity<Producto>(entity =>
         {
-            entity.HasKey(e => e.IdProducto).HasName("PK__Producto__09889210F47FF636");
+            entity.HasKey(e => e.IdProducto).HasName("PK__Producto__098892103C3F7352");
 
             entity.ToTable("Producto");
 
@@ -81,35 +94,37 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
             entity.HasOne(d => d.IdDepartamentoNavigation).WithMany(p => p.Productos)
                 .HasForeignKey(d => d.IdDepartamento)
-                .HasConstraintName("FK__Producto__IdDepa__1DE57479");
+                .HasConstraintName("FK__Producto__IdDepa__20C1E124");
 
             entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.Productos)
                 .HasForeignKey(d => d.IdMarca)
-                .HasConstraintName("FK__Producto__IdMarc__1ED998B2");
+                .HasConstraintName("FK__Producto__IdMarc__21B6055D");
 
             entity.HasOne(d => d.IdProveedorNavigation).WithMany(p => p.Productos)
                 .HasForeignKey(d => d.IdProveedor)
-                .HasConstraintName("FK__Producto__IdProv__1FCDBCEB");
+                .HasConstraintName("FK__Producto__IdProv__22AA2996");
 
             entity.HasOne(d => d.IdUsuarioModificacionNavigation).WithMany(p => p.Productos)
                 .HasForeignKey(d => d.IdUsuarioModificacion)
-                .HasConstraintName("FK__Producto__IdUsua__20C1E124");
+                .HasConstraintName("FK__Producto__IdUsua__239E4DCF");
         });
 
         modelBuilder.Entity<ProductoInventario>(entity =>
         {
-            entity.HasKey(e => e.IdProductoInventario).HasName("PK__Producto__E388F2A2F2167B3E");
+            entity.HasKey(e => e.IdProductoInventario).HasName("PK__Producto__E388F2A2D7174D4B");
 
             entity.ToTable("ProductoInventario");
 
+            entity.Property(e => e.Fecha).HasColumnType("date");
+
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.ProductoInventarios)
                 .HasForeignKey(d => d.IdProducto)
-                .HasConstraintName("FK__ProductoI__IdPro__286302EC");
+                .HasConstraintName("FK__ProductoI__IdPro__2B3F6F97");
         });
 
         modelBuilder.Entity<Proveedor>(entity =>
         {
-            entity.HasKey(e => e.IdProveedor).HasName("PK__Proveedo__E8B631AF9DE2EFD2");
+            entity.HasKey(e => e.IdProveedor).HasName("PK__Proveedo__E8B631AF089DF121");
 
             entity.ToTable("Proveedor");
 
@@ -132,13 +147,13 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
         modelBuilder.Entity<Usuario>(entity =>
         {
-            entity.HasKey(e => e.IdUsuario).HasName("PK__Usuario__5B65BF97657DFE53");
+            entity.HasKey(e => e.IdUsuario).HasName("PK__Usuario__5B65BF9787B8A5DE");
 
             entity.ToTable("Usuario");
 
-            entity.HasIndex(e => e.EmailEmpresarial, "UQ__Usuario__539E972D4533545B").IsUnique();
+            entity.HasIndex(e => e.EmailEmpresarial, "UQ__Usuario__539E972D006EC26E").IsUnique();
 
-            entity.HasIndex(e => e.Curp, "UQ__Usuario__F46C4CBF6FCF5A29").IsUnique();
+            entity.HasIndex(e => e.Curp, "UQ__Usuario__F46C4CBF2ED99E15").IsUnique();
 
             entity.Property(e => e.ApellidoMaterno)
                 .HasMaxLength(50)
@@ -169,14 +184,18 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
 
+            entity.HasOne(d => d.IdAreaNavigation).WithMany(p => p.Usuarios)
+                .HasForeignKey(d => d.IdArea)
+                .HasConstraintName("FK__Usuario__IdArea__145C0A3F");
+
             entity.HasOne(d => d.IdUsuarioModificacionNavigation).WithMany(p => p.InverseIdUsuarioModificacionNavigation)
                 .HasForeignKey(d => d.IdUsuarioModificacion)
-                .HasConstraintName("FK__Usuario__IdUsuar__1273C1CD");
+                .HasConstraintName("FK__Usuario__IdUsuar__15502E78");
         });
 
         modelBuilder.Entity<UsuarioFecha>(entity =>
         {
-            entity.HasKey(e => e.IdUsuarioFecha).HasName("PK__UsuarioF__EE6BEFEDC1A8C2C9");
+            entity.HasKey(e => e.IdUsuarioFecha).HasName("PK__UsuarioF__EE6BEFED573CA0BE");
 
             entity.ToTable("UsuarioFecha");
 
@@ -188,29 +207,29 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
             entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.UsuarioFechas)
                 .HasForeignKey(d => d.IdUsuario)
-                .HasConstraintName("FK__UsuarioFe__IdUsu__15502E78");
+                .HasConstraintName("FK__UsuarioFe__IdUsu__182C9B23");
         });
 
         modelBuilder.Entity<UsuarioProducto>(entity =>
         {
-            entity.HasKey(e => e.IdUsuarioProducto).HasName("PK__UsuarioP__0061B623B6DD964D");
+            entity.HasKey(e => e.IdUsuarioProducto).HasName("PK__UsuarioP__0061B62330BEAD17");
 
             entity.ToTable("UsuarioProducto");
 
             entity.Property(e => e.FechaAsignacion).HasColumnType("date");
             entity.Property(e => e.FechaEntrega).HasColumnType("date");
 
-            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.UsuarioProductos)
-                .HasForeignKey(d => d.IdProducto)
-                .HasConstraintName("FK__UsuarioPr__IdPro__24927208");
+            entity.HasOne(d => d.IdProductoInventarioNavigation).WithMany(p => p.UsuarioProductos)
+                .HasForeignKey(d => d.IdProductoInventario)
+                .HasConstraintName("FK__UsuarioPr__IdPro__276EDEB3");
 
             entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.UsuarioProductoIdUsuarioNavigations)
                 .HasForeignKey(d => d.IdUsuario)
-                .HasConstraintName("FK__UsuarioPr__IdUsu__239E4DCF");
+                .HasConstraintName("FK__UsuarioPr__IdUsu__267ABA7A");
 
             entity.HasOne(d => d.IdUsuarioModificacionNavigation).WithMany(p => p.UsuarioProductoIdUsuarioModificacionNavigations)
                 .HasForeignKey(d => d.IdUsuarioModificacion)
-                .HasConstraintName("FK__UsuarioPr__IdUsu__25869641");
+                .HasConstraintName("FK__UsuarioPr__IdUsu__286302EC");
         });
 
         OnModelCreatingPartial(modelBuilder);

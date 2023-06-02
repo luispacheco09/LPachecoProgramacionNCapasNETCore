@@ -9,7 +9,7 @@ public partial class UsuarioProducto
 
     public int? IdUsuario { get; set; }
 
-    public int? IdProducto { get; set; }
+    public int? IdProductoInventario { get; set; }
 
     public DateTime? FechaAsignacion { get; set; }
 
@@ -17,7 +17,7 @@ public partial class UsuarioProducto
 
     public int? IdUsuarioModificacion { get; set; }
 
-    public virtual Producto? IdProductoNavigation { get; set; }
+    public virtual Producto? IdProductoInventarioNavigation { get; set; }
 
     public virtual Usuario? IdUsuarioModificacionNavigation { get; set; }
 
