@@ -1,0 +1,57 @@
+﻿@*@model Microsoft.AspNetCore.Identity.IdentityUser*@
+@model ML.Usuario
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Rol</h2>
+        <h5>Ingrese los datos del usuario:</h5>
+    </div>
+</div>
+
+
+@using (Html.BeginForm("Form", "Usuario", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row">
+        <div class="col-md-3" style="display: none;">
+            @Html.TextBoxFor(model => model.Id, new { @class = "hidden form-control", autocomplete = "off" })
+        </div>
+
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.AspNetUser.UserName)
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-controller"></i></span>
+                @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", @id = "txtNombre", @placeholder="Ejemp: Administrador", autocomplete = "off" })
+                @Html.ValidationMessageFor(model => model.UserName, null, new { @class = "text-danger"})
+            </div>
+
+            @Html.LabelFor(model => model.AspNetUser.Email)
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-controller"></i></span>
+                @Html.TextBoxFor(model => model.AspNetUser.Email, new { @class = "form-control", @id = "txtEmail", @placeholder="Ejemp: admin@gmail.com", autocomplete = "off" })
+                @Html.ValidationMessageFor(model => model.AspNetUser.Email, null, new { @class = "text-danger"})
+            </div>
+
+            @Html.LabelFor(model => model.AspNetUser.PhoneNumber)
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-controller"></i></span>
+                @Html.TextBoxFor(model => model.AspNetUser.PhoneNumber, new { @class = "form-control", @id = "txtTelefono", @placeholder="Ejemp: 5555555555", autocomplete = "off" })
+                @Html.ValidationMessageFor(model => model.AspNetUser.PhoneNumber, null, new { @class = "text-danger"})
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(model => Model.AspNetRole.Id)
+                @Html.DropDownListFor(model => Model.AspNetRole.Id, new SelectList(Model.AspNetRole.Id, "IdRol", "Nombre"), "Selecciona un Rol", new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-3">
+                <input type="submit" value="Guardar" class="btn btn-success" />
+                @Html.ActionLink("Regresar", "GetAll", "UsuarioController", htmlAttributes: new { @class = "btn btn-danger" })
+            </div>
+        </div>
+    </div>
+}
