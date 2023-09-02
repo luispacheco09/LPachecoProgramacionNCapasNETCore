@@ -39,6 +39,10 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
     public virtual DbSet<Proveedor> Proveedors { get; set; }
 
+    public virtual DbSet<Sucursal> Sucursals { get; set; }
+
+    public virtual DbSet<SucursalProducto> SucursalProductos { get; set; }
+
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     public virtual DbSet<UsuarioFecha> UsuarioFechas { get; set; }
@@ -227,6 +231,57 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
             entity.Property(e => e.Telefono)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Sucursal>(entity =>
+        {
+            entity.HasKey(e => e.IdSucursal).HasName("PK__Sucursal__BFB6CD99D28ED906");
+
+            entity.ToTable("Sucursal");
+
+            entity.Property(e => e.Calle)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Colonia)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Cp)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("CP");
+            entity.Property(e => e.Estado)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Municipio)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.NumeroExterior)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.NumeroInterior)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.PaginaWeb)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<SucursalProducto>(entity =>
+        {
+            entity.HasKey(e => e.IdSucursalProducto).HasName("PK__Sucursal__072D557E2CE366DF");
+
+            entity.ToTable("SucursalProducto");
+
+            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.SucursalProductos)
+                .HasForeignKey(d => d.IdProducto)
+                .HasConstraintName("FK__SucursalP__IdPro__4CA06362");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.SucursalProductos)
+                .HasForeignKey(d => d.IdSucursal)
+                .HasConstraintName("FK__SucursalP__IdSuc__4D94879B");
         });
 
         modelBuilder.Entity<Usuario>(entity =>

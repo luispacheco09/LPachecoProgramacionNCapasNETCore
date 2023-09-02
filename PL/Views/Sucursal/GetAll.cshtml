@@ -1,0 +1,78 @@
+﻿@model ML.Sucursal
+@{
+    ViewData["Title"] = "GetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>GetAll</h1>
+<div class="container">
+    <div class=row>
+        <div class="text-center">
+            <h2>Sucursales</h2>
+
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <h2>Detalle</h2>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h5>Seleccione una sucursal para editarlo o + para agregar...</h5>
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+
+            <div style="float:inline-end;">
+                @Html.ActionLink("+", "Form", "Sucursal", htmlAttributes: new { @class = "btn btn-success" })
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Sucursales != null)
+    {
+        @if (Model.Sucursales.Count > 0)
+
+        {
+            <div class="row">
+                <table class="table table-hover table-striped table-bordered table-responsive" id="table_sucursales">
+                    <thead>
+                        <tr class="table-secondary">
+                            <td>Editar</td>
+                            <td style="display :none;">id</td>
+                            <td>Nombre</td>
+                            <td>Direccion</td>
+                            <td>Pagina Web</td>
+                            <td>Eliminar</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (ML.Sucursal sucursal in Model.Sucursales)
+                        {
+                            <tr>
+                                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-warning glyphicon" href="@Url.Action("Form", "Sucursal", new { IdSucursal = sucursal.IdSucursal })"><i class="bi bi-pencil-square" style="color: ivory"></i></a></td>
+                                <td style="display :none;">@sucursal.IdSucursal </td>
+                                <td>@sucursal.Nombre </td>
+                                <td>@sucursal.Calle @sucursal.NumeroInterior @sucursal.NumeroExterior, @sucursal.Colonia @sucursal.Municipio @sucursal.CP, @sucursal.Estado </td>
+                                <td>@sucursal.PaginaWeb</td>
+                                @*<td class="text-success">@user.UsuarioRol.RolId)</td>*@
+                                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "Sucursal", new { IdSucursal = sucursal.IdSucursal})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><i class="bi bi-eraser-fill" style="color: mintcream"></i></a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger" role="alert">No hay sucursales registradas. Da click en + para agregar una nueva sucursal.</div>
+        }
+    }
+   
+
+</div>
+
+

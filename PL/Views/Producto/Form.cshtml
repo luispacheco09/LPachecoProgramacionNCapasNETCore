@@ -1,0 +1,183 @@
+﻿@model ML.Producto
+@{
+    ViewData["Title"] = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Form</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>Producto</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h5> Ingrese los datos del producto</h5>
+        </div>
+        <hr />
+    </div>
+
+    <form asp-action="Form" asp-controller="Producto" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-4">
+                <label asp-for="IdProducto" class="hidden"></label>
+                <input asp-for="IdProducto" class="form-control hidden" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-4">
+                <label asp-for="Nombre"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger" id="lblCurpErrorMessage"></span>
+            </div>
+
+            @* <div class="col-md-4">
+            <label asp-for="PrecioUnitario"></label>
+            <input asp-for="PrecioUnitario" class="form-control" />
+            <span asp-validation-for="PrecioUnitario" class="text-danger" id="lblCurpErrorMessage"></span>
+            </div>
+
+            <div class="col-md-4">
+            <label asp-for="Stock"></label>
+            <input asp-for="Stock" class="form-control" />
+            <span asp-validation-for="Stock" class="text-danger" id="lblCurpErrorMessage"></span>
+            </div>*@
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="col-md-4">
+                @Html.LabelFor(producto => Model.Proveedor.Proveedores)
+                @Html.DropDownListFor(producto => Model.Proveedor.IdProveedor, new SelectList(Model.Proveedor.Proveedores, "IdProveedor", "Nombre"), "Selecciona un Numero ", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => Model.Proveedor.IdProveedor, "", new { @class = "text-danger", @id = "lblProveedorErrorMessage" })
+
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(producto => Model.Marca.Marcas)
+                @Html.DropDownListFor(producto => Model.Marca.IdMarca, new SelectList(Model.Marca.Marcas, "IdMarca", "Nombre"), "Selecciona una Marca", new { @id = "ddlMarca", @class = "form-control" })
+                @Html.ValidationMessageFor(model => Model.Marca.IdMarca, "", new { @class = "text-danger", @id = "lblDepartamentoErrorMessage" })
+
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(producto => Model.Departamento.Departamentos)
+                @Html.DropDownListFor(producto => Model.Departamento.IdDepartamento, new SelectList(Model.Departamento.Departamentos, "IdDepartamento", "Nombre"), "Selecciona un Departamento", new { @id = "ddlDepartamento", @class = "form-control" })
+                @Html.ValidationMessageFor(model => Model.Departamento.IdDepartamento, "", new { @class = "text-danger", @id = "lblProveedorErrorMessage" })
+
+            </div>
+
+            @*<div class="col-md-4">
+            @Html.LabelFor(model => Model.Departamento.Departamentos)
+
+            @if (Model.Departamento.Departamentos != null)
+            {
+            @Html.DropDownListFor(model => Model.Departamento.IdDepartamento, new SelectList(Model.Departamento.Departamentos, "IdDepartamento", "Nombre"), "Selecciona un Departamento2", new { @id = "ddlDepartamento", @class = "form-control" })
+            }
+            else
+            {
+            @Html.DropDownListFor(model => model.Departamento.IdDepartamento, new SelectList(string.Empty, "IdDepartamento", "Nombre"), "Selecciona un Departamento3", htmlAttributes: new { @id = "ddlDepartamento", @class = "form-control" })
+            }
+
+            </div>*@
+
+        </div>
+
+
+        @*        <div class="row">
+        <div class="col-md-4">
+        <label asp-for="Proveedor.IdProveedor"></label>
+        <select asp-for="Proveedor.IdProveedor" asp-items="new SelectList(Model.Proveedor.Proveedores, "IdProveedor", "Nombre")" class="form-control">
+        <option value="">Selecciona un Numero</option>
+        </select>
+        <span asp-validation-for="Proveedor.IdProveedor" class="text-danger" id="lblProveedorErrorMessage"></span>
+        </div>
+
+        <div class="col-md-4">
+        <label asp-for="Departamento.Area.IdArea"></label>
+        <select asp-for="Departamento.Area.IdArea" asp-items="new SelectList(Model.Departamento.Area.Areas, "IdArea", "Nombre")" class="form-control" id="ddlArea">
+        <option value="">Selecciona un Area</option>
+        </select>
+        <span asp-validation-for="Departamento.Area.IdArea" class="text-danger" id="lblDepartamentoErrorMessage"></span>
+        </div>
+
+        <div class="col-md-4">
+        <label asp-for="Departamento.IdDepartamento"></label>
+        @if (Model.Departamento.Departamentos != null)
+        {
+        <select asp-for="Departamento.IdDepartamento" asp-items="new SelectList(Model.Departamento.Departamentos, "IdDepartamento", "Nombre")" class="form-control" id="ddlDepartamento">
+        <option value="">Selecciona un Departamento2</option>
+        </select>
+        }
+        else
+        {
+        <select asp-for="Departamento.IdDepartamento" asp-items="new SelectList(string.Empty, "IdDepartamento", "Nombre")" class="form-control" id="ddlDepartamento">
+        <option value="">Selecciona un Departamento3</option>
+        </select>
+        }
+        </div>
+        </div>*@
+        <br>
+
+        <div class="row">
+            <div class="col-md-4">
+                <label asp-for="Descripcion"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger" id="lblCurpErrorMessage"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="CodigoBarras"></label>
+                <input asp-for="CodigoBarras" class="form-control" />
+                <span asp-validation-for="CodigoBarras" class="text-danger" id="lblCurpErrorMessage"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Modelo"></label>
+                <input asp-for="Modelo" class="form-control" />
+                <span asp-validation-for="Modelo" class="text-danger" id="lblCurpErrorMessage"></span>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+           @* <div class="col-md-4">
+                <label asp-for="Descripcion"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger" id="lblDescripcionErrorMessage"></span>
+            </div>
+*@
+            <div class="col-md-4">
+                <label asp-for="Imagen"></label>
+                <input type="file" name="Imagen" id="fuimgProducto" onchange="imgPreview(event);" />
+                <span asp-validation-for="Imagen" class="text-danger" id="lblImagenErrorMessage"></span>
+
+                @if (Model.Imagen != null)
+                {
+                    <input asp-for="Imagen" class="hidden" />
+                    <img id="imgProducto" src="data:image/jpg;base64,@Convert.ToBase64String(Model.Imagen)" style="width:200px; height:200px" />
+                }
+                else
+                {
+                    <img id="imgProducto" src="~/Images/producto.png" style="width:200px; height:200px" />
+                }
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-1 offset-md-5">
+                <input type="submit" class="btn btn-success" value="Guardar" />
+            </div>
+            <div class="col-md-1">
+                <a asp-action="GetAll" asp-controller="Producto" class="btn btn-danger">Cancelar</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+
+<script src="~/Scripts/Producto/PreviewImage.js"></script>

@@ -1,0 +1,40 @@
+﻿@*@model ML.Result
+
+@if (Model != null)
+{
+    <div class="row">
+        <table class="table table-hover table-striped table-bordered table-responsive" id="table_sucursales">
+            <thead>
+                <tr class="table-secondary">
+                    <td>Editar</td>
+                    <td style="display :none;">id</td>
+                    <td>Nombre</td>
+                    <td>Codigo de barras</td>
+                    <td>Modelo</td>
+                    <td>Marca</td>
+                    <td>Proveedor</td>
+                    <td>Departamento</td>
+                    <td>Imagen</td>
+                    <td>Eliminar</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ( producto in Model.Objects)
+                {
+                    <tr>
+                        <td style="text-align: center; vertical-align: middle;"><a class="btn btn-warning glyphicon" href="@Url.Action("Form", "Producto", new { IdProducto = producto.IdProducto })"><i class="bi bi-pencil-square" style="color: ivory"></i></a></td>
+                        <td style="display :none;">@producto.IdProducto </td>
+                        <td>@producto.Producto.Nombre </td>
+                        <td>@producto.Sucursal.Nombre</td>
+                        
+                        <td style="text-align: center; vertical-align: middle;"><a class="btn btn-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "Producto", new { IdProducto = producto.IdProducto})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><i class="bi bi-eraser-fill" style="color: mintcream"></i></a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+}
+*@

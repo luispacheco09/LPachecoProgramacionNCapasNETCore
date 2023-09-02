@@ -37,5 +37,7 @@ public partial class Producto
 
     public virtual ICollection<ProductoInventario> ProductoInventarios { get; set; } = new List<ProductoInventario>();
 
+    public virtual ICollection<SucursalProducto> SucursalProductos { get; set; } = new List<SucursalProducto>();
+
     public virtual ICollection<UsuarioProducto> UsuarioProductos { get; set; } = new List<UsuarioProducto>();
 }

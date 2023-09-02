@@ -1,0 +1,52 @@
+﻿@model ML.Sucursal
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+@using (Html.BeginForm("GetSucursal", "SucursalProducto", FormMethod.Post, new { enctype = "multipart/form-data" })) //se hace uso del form Post
+{
+    <div id="formulario" >
+
+        <div class="row">
+            <div class="col-md-4">
+                @Html.LabelFor(producto => Model.Sucursales)
+                @Html.DropDownListFor(producto => Model.IdSucursal, new SelectList(Model.Sucursales, "IdSucursal", "Nombre"), "Selecciona una Sucursal", new { @id = "ddlSucursal", @class = "form-control" })
+                @Html.ValidationMessageFor(model => Model.IdSucursal, "", new { @class = "text-danger", @id = "lblSucursalErrorMessage" })
+            </div>
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="col-md-2 ">
+                <input type="submit" class="btn btn-success" value="Mostrar sucursal" onclick="return mostrarSucursal();" />
+            </div>
+        </div>
+    </div>
+}
+
+<div id="sucursalesProductos">
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    function mostrarSucursal(){
+        var selectedSucursal = $('#ddlSucursal').val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetSucursal", "SucursalProducto")',
+            data:{IdSucursal:selectedSucursal},
+            success: function (data) {
+                $('#sucursalesProductos').html(data);
+            },
+            error: function(){
+                alert('error a traer los datos');
+
+            }
+        });
+        return false;
+    }
+</script>
