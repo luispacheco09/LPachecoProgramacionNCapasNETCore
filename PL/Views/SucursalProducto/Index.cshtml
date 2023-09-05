@@ -1,4 +1,4 @@
-﻿@model ML.Sucursal
+﻿@model ML.SucursalProducto
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -12,9 +12,9 @@
 
         <div class="row">
             <div class="col-md-4">
-                @Html.LabelFor(producto => Model.Sucursales)
-                @Html.DropDownListFor(producto => Model.IdSucursal, new SelectList(Model.Sucursales, "IdSucursal", "Nombre"), "Selecciona una Sucursal", new { @id = "ddlSucursal", @class = "form-control" })
-                @Html.ValidationMessageFor(model => Model.IdSucursal, "", new { @class = "text-danger", @id = "lblSucursalErrorMessage" })
+                @Html.LabelFor(producto => Model.Sucursal.Sucursales)
+                @Html.DropDownListFor(producto => Model.Sucursal.IdSucursal, new SelectList(Model.Sucursal.Sucursales, "IdSucursal", "Nombre"), "Selecciona una Sucursal", new { @id = "ddlSucursal", @class = "form-control" })
+                @Html.ValidationMessageFor(model => Model.Sucursal.IdSucursal, "", new { @class = "text-danger", @id = "lblSucursalErrorMessage" })
             </div>
         </div>
         <br>
@@ -35,6 +35,7 @@
 <script type="text/javascript">
     function mostrarSucursal(){
         var selectedSucursal = $('#ddlSucursal').val();
+        console.log("selectedSucursal: " + selectedSucursal);
         $.ajax({
             type: 'POST',
             url: '@Url.Action("GetSucursal", "SucursalProducto")',

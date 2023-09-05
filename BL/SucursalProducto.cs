@@ -65,6 +65,70 @@ namespace BL
             }
             return result;
         }
+        public static ML.Result UpdateStock(int IdStock, int Stock)
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
+                {
+                    var query = (from spDL in context.SucursalProductos
+                                 where spDL.IdSucursalProducto == IdStock
+                                 select spDL).FirstOrDefault();
+                    if(query != null)
+                    {
+                        query.Stock = Stock;
+                        context.SaveChanges();
+                        result.Object = query.Stock;
+                        result.Correct=true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se puede actualiza el stock";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct= false;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
+        public static ML.Result Delete(int IdSucursalP)
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
+                {
+                    var query = (from sproductoDL in context.SucursalProductos
+                                 where sproductoDL.IdSucursalProducto == IdSucursalP
+                                 select sproductoDL).First();
+                    if (query != null)
+                    {
+                        context.SucursalProductos.Remove(query);
+                        context.SaveChanges();
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se pudo eliminar el producto de la sucursal";
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
+
+
         public static ML.Result GetById(int IdSucursal)
         {
             ML.Result result = new ML.Result();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ML;
 
 namespace PL.Controllers
 {
@@ -20,10 +21,42 @@ namespace PL.Controllers
 
         public IActionResult GetSucursal(int IdSucursal)
         {
-            ML.Sucursal sucursal = new ML.Sucursal();
+            ML.SucursalProducto sucursalp = new ML.SucursalProducto();
             ML.Result resultSucursal = BL.SucursalProducto.GetbySucursal(IdSucursal);
-            sucursal.Sucursales = resultSucursal.Objects;
-            return PartialView("ResultadoSucursalP", resultSucursal);
+            sucursalp.SucuralesProductos = resultSucursal.Objects;
+            return PartialView("ResulltadoSucursalP",sucursalp);
+        }
+        public IActionResult UpdateStock(int idStock, int txtStock)
+        {
+            ML.Result resultStock = BL.SucursalProducto.UpdateStock(idStock, txtStock);
+            if (resultStock.Correct)
+            {
+                //ViewBag.Mensaje = "Se ha actualizado correctamente el stock";
+                return Json(new {success = true, message = "Se ha actualizado correctamente el stock", nuevoValor = resultStock.Object });
+            }
+            else
+            {
+                //ViewBag.Mensaje = "No se ha podido actualizado el stock. Error: " + resultStock.ErrorMessage;
+                return Json(new { success = false, message = "No se ha podido actualizar correctamente el stock" });
+
+            }
+
+            //return PartialView("Modal");
+        }
+        public ActionResult Delete(int IdSucursalP)
+        {
+            ML.Result result = BL.SucursalProducto.Delete(IdSucursalP);//Trae la informacion directa desde el BL
+
+            if (result.Correct)
+            {
+                ViewBag.Mensaje = "Se ha eliminado correctamente el producto de la sucursal";
+            }
+            else
+            {
+                ViewBag.Mensaje = "No se ha podido eliminar el producto  de la sucursal. Error: " + result.ErrorMessage;
+            }
+
+            return PartialView("Modal");
         }
     }
 }
