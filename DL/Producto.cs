@@ -27,6 +27,8 @@ public partial class Producto
 
     public int? IdUsuarioModificacion { get; set; }
 
+    public decimal? PrecioUnitario { get; set; }
+
     public virtual Departamento? IdDepartamentoNavigation { get; set; }
 
     public virtual Marca? IdMarcaNavigation { get; set; }

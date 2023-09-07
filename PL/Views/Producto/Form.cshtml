@@ -23,8 +23,8 @@
     <form asp-action="Form" asp-controller="Producto" method="post" enctype="multipart/form-data">
         <div class="row">
             <div class="col-md-4">
-                <label asp-for="IdProducto" class="hidden"></label>
-                <input asp-for="IdProducto" class="form-control hidden" />
+                <label asp-for="IdProducto" hidden class="hidden"></label>
+                <input asp-for="IdProducto" hidden class="form-control hidden" />
             </div>
         </div>
         <br />
@@ -35,17 +35,12 @@
                 <span asp-validation-for="Nombre" class="text-danger" id="lblCurpErrorMessage"></span>
             </div>
 
-            @* <div class="col-md-4">
+             <div class="col-md-4">
             <label asp-for="PrecioUnitario"></label>
             <input asp-for="PrecioUnitario" class="form-control" />
             <span asp-validation-for="PrecioUnitario" class="text-danger" id="lblCurpErrorMessage"></span>
             </div>
 
-            <div class="col-md-4">
-            <label asp-for="Stock"></label>
-            <input asp-for="Stock" class="form-control" />
-            <span asp-validation-for="Stock" class="text-danger" id="lblCurpErrorMessage"></span>
-            </div>*@
         </div>
         <br>
 
@@ -157,7 +152,7 @@
 
                 @if (Model.Imagen != null)
                 {
-                    <input asp-for="Imagen" class="hidden" />
+                    @Html.HiddenFor(model => Model.Imagen)
                     <img id="imgProducto" src="data:image/jpg;base64,@Convert.ToBase64String(Model.Imagen)" style="width:200px; height:200px" />
                 }
                 else

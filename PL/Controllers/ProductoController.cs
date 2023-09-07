@@ -77,8 +77,7 @@ namespace PL.Controllers
                 producto.Nombre = ((ML.Producto)result.Object).Nombre;
                 producto.Descripcion = ((ML.Producto)result.Object).Descripcion;
                 producto.FechaIngreso = ((ML.Producto)result.Object).FechaIngreso;
-                //producto.PrecioUnitario = ((ML.Producto)result.Object).PrecioUnitario;
-                //producto.Stock = ((ML.Producto)result.Object).Stock;
+                producto.PrecioUnitario = ((ML.Producto)result.Object).PrecioUnitario;
                 producto.CodigoBarras = ((ML.Producto)result.Object).CodigoBarras;
                 producto.Imagen = ((ML.Producto)result.Object).Imagen;
                 producto.Modelo = ((ML.Producto)result.Object).Modelo;
@@ -103,15 +102,15 @@ namespace PL.Controllers
         }
 
         [HttpPost] //Recibe datos del formulario
-        //public ActionResult Form(ML.Producto producto, IFormFile imgProducto)
-        public ActionResult Form(ML.Producto producto)
+        public ActionResult Form(ML.Producto producto, IFormFile Imagen)
+        //public ActionResult Form(ML.Producto producto)
         {
 
-            //if (imgProducto != null)//Aplica para ambos add y update
-            //{
-            //    producto.Imagen = ConvertToBytes(imgProducto);//Se convierte la imagen a bytes
+            if (Imagen != null)//Aplica para ambos add y update
+            {
+                producto.Imagen = ConvertToBytes(Imagen);//Se convierte la imagen a bytes
 
-            //}
+            }
             if (ModelState.IsValid)
             {
                 if (producto.IdProducto == 0)//add
@@ -121,11 +120,11 @@ namespace PL.Controllers
                     if (result.Correct)
                     {
                         //mediante el ViewBag enviamos datos del controlador a la vista
-                        ViewBag.Mensaje = "Se ha registrado correctamente el usuario";
+                        ViewBag.Mensaje = "Se ha registrado correctamente el producto";
                     }
                     else
                     {
-                        ViewBag.Mensaje = "No se ha registado conrrectamente el usuario " + result.ErrorMessage;
+                        ViewBag.Mensaje = "No se ha registado conrrectamente el producto " + result.ErrorMessage;
                     }
                 }
                 else //update
@@ -136,11 +135,11 @@ namespace PL.Controllers
                     if (result.Correct)
                     {
                         //mediante el ViewBag enviamos datos del controlador a la vista
-                        ViewBag.Mensaje = "Se ha actualizado correctamente el usuario";
+                        ViewBag.Mensaje = "Se ha actualizado correctamente el producto";
                     }
                     else
                     {
-                        ViewBag.Mensaje = "No se ha podido actualizar conrrectamente el usuario " + result.ErrorMessage;
+                        ViewBag.Mensaje = "No se ha podido actualizar conrrectamente el producto " + result.ErrorMessage;
                     }
                 }
                 return PartialView("Modal");

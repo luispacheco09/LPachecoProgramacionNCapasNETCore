@@ -1,0 +1,168 @@
+﻿@model ML.Producto
+@{
+    ViewData["Title"] = "GetAllProducto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>GetAllProducto</h1>
+@using (Html.BeginForm("GetSucursal", "SucursalProducto", FormMethod.Post, new { enctype = "multipart/form-data" })) //se hace uso del form Post
+{
+    <div id="formulario">
+        <div class="row">
+            <div class="col-md-4">
+                @Html.LabelFor(producto => Model.Departamento.Area.Areas)
+                @Html.DropDownListFor(producto => Model.Departamento.Area.IdArea, new SelectList(Model.Departamento.Area.Areas, "IdArea", "Nombre"), "Selecciona un Area", new { @id = "ddlArea", @class = "form-control" })
+                @Html.ValidationMessageFor(model => Model.Departamento.Area.IdArea, "", new { @class = "text-danger", @id = "lblDepartamentoErrorMessage" })
+
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(model => Model.Departamento.Departamentos)
+
+                @if (Model.Departamento.Departamentos != null)
+                {
+                    @Html.DropDownListFor(model => Model.Departamento.IdDepartamento, new SelectList(Model.Departamento.Departamentos, "IdDepartamento", "Nombre"), "Selecciona un Departamento2", new { @id = "ddlDepartamento", @class = "form-control" })
+                }
+                else
+                {
+                    @Html.DropDownListFor(model => model.Departamento.IdDepartamento, new SelectList(string.Empty, "IdDepartamento", "Nombre"), "Selecciona un Departamento3", htmlAttributes: new { @id = "ddlDepartamento", @class = "form-control" })
+                }
+
+            </div>
+
+        
+            <div class="col-md-2 mt-4 ">
+                <input type="submit" class="btn btn-success" value="Mostrar sucursal" onclick="return mostrarProductosSucursal();" />
+            </div>
+        </div>
+    </div>
+}
+
+@*
+@foreach (ML.Producto producto in Model.Productos){
+
+<div style="margin: 3rem auto; width: 20rem">
+    <div class="card">
+            @if (producto.Imagen != null)
+            {
+                <img src="data:image/jpg;base64,@Convert.ToBase64String(producto.Imagen)" style="width:200px; height:200px" class="card-img-top" />
+            }
+            else
+            {
+                <img id="imgUsuario" src="~/Images/producto.png" style="width:150px; height:150px" class="card-img-top" />
+            }
+
+        <div class="card-body">
+            <h5 class="card-title">@producto.Nombre</h5>
+            <h6 class="card-subtitle mb-2 text-muted">199$</h6>
+            <p class="card-text">       
+               @producto.Descripcion
+            </p>
+            <a href="#" class="btn btn-primary">Add to Cart</a>
+        </div>
+    </div>
+</div>
+}*@
+
+
+
+
+@*<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (ML.Producto producto in Model.Productos)
+            {
+                <div class="col">
+                    <div class="card text-black">
+                        @if (producto.Imagen != null)
+                        {
+                            <img src="data:image/jpg;base64,@Convert.ToBase64String(producto.Imagen)" style="width:150px; height:150px" class="card-img-top rounded mx-auto d-block" />
+                        }
+                        else
+                        {
+                            <img id="imgUsuario" src="~/Images/producto.png" style="width:150px; height:150px" class="card-img-top rounded mx-auto d-block" />
+                        }
+                        <div class="card-body">
+                            <div class="text-center mt-1">
+                                <h4 class="card-title">@producto.Nombre</h4>
+                                <h6 class="text-primary mb-1 pb-3">Precio $399</h6>
+                            </div>
+
+                            <div class="text-center">
+                                <div class="d-flex flex-column mb-4">
+                                    <span>@producto.Modelo</span>
+                                </div>
+
+                                <div class="d-flex flex-column mb-4">
+                                    <span>@producto.Descripcion</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-row">
+
+                                <button type="button" class="btn btn-danger flex-fill ms-1">Agregar al carrito</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>*@
+
+
+
+<div id="sucursalesProductos">
+
+</div>
+
+<!-- Incluye jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#ddlArea").change(function () {
+
+            $("#ddlDepartamento").empty();
+            var url = '/Venta/GetDepartamentosList';
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: 'json',
+                data: { IdArea: $("#ddlArea").val() },
+                success: function (departamentos) {
+                    $("#ddlDepartamento").append('<option value="0">' + 'Seleccione un departamento0' + '</option>');
+                    $.each(departamentos, function (i, departamentos) {
+                        $("#ddlDepartamento").append('<option value="'
+                            + departamentos.idDepartamento + '">'
+                            + departamentos.nombre + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed.' + ex);
+                }
+            });
+        });
+    });
+
+    function mostrarProductosSucursal() {
+        var selectedDepartamento = $('#ddlDepartamento').val();
+        console.log("selectedSucursal: " + selectedDepartamento);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetProducto", "Venta")',
+            data: { IdDepartamento: selectedDepartamento },
+            success: function (data) {
+                $('#sucursalesProductos').html(data);
+            },
+            error: function () {
+                alert('error a traer los datos');
+
+            }
+        });
+        return false;
+    }
+</script>

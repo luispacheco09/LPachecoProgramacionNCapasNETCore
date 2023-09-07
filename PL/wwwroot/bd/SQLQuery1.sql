@@ -1,6 +1,5 @@
 CREATE DATABASE LPachecoProgramacionNCapasNETCore
 
-
 DROP DATABASE LPachecoProgramacionNCapasNETCore
 
 CREATE TABLE Area(
@@ -84,7 +83,7 @@ Fecha DATE
 
 
 /*
-Scaffold-DbContext "Server=.; Database=LPachecoProgramacionNCapasNETCore; TrustServerCertificate=True; Trusted_Connection=True; User ID=sa; Password=pass@word1;" Microsoft.EntityFrameworkCore.SqlServer
+Scaffold-DbContext "Server=.; Database=LPachecoProgramacionNCapasNETCore; TrustServerCertificate=True; Trusted_Connection=True; User ID=sa; Password=pass@word1;" Microsoft.EntityFrameworkCore.SqlServer -f
 
 */
 
@@ -113,14 +112,65 @@ ALTER TABLE Departamento
 ADD IdArea INT REFERENCES Area(IdArea)
 
 ALTER TABLE Producto
-ADD PrecioUnitario DECIMAL(18,2) NOT NULL,
-	Stock INT NOT NULL
+ADD PrecioUnitario DECIMAL(18,2)
 
 
+CREATE TABLE MetodoPago(
+IdMetodoPago INT PRIMARY KEY IDENTITY(1,1),
+Metodo VARCHAR(50) NOT NULL
+)
+
+CREATE TABLE Venta(
+IdVenta  INT PRIMARY KEY IDENTITY(1,1),
+IdUsuario INT REFERENCES Usuario(IdUsuario),
+Total DECIMAL (18,2) NOT NULL,
+IdMetodoPago INT REFERENCES MetodoPago(IdMetodoPago),
+Fecha DATETIME
+)
+
+CREATE TABLE VentaProducto(
+IdVentaProducto INT PRIMARY KEY IDENTITY(1,1),
+IdVenta INT REFERENCES Venta(IdVenta),
+IdSucursalProducto INT REFERENCES SucursalProducto(IdSucursalProducto),
+Cantidad INT NOT NULL
+)
+
+--------PRUEBAS--------
 	select Producto.Nombre, Sucursal.Nombre
 	from SucursalProducto
 	inner join Sucursal
 	on SucursalProducto.IdSucursal = Sucursal.IdSucursal
 	inner join Producto
 	on SucursalProducto.IdProducto = Producto.IdProducto
-	where Sucursal.IdSucursal = 2
+	where Sucursal.IdSucursal = 2 AND Producto.IdDepartamento =4
+
+
+INSERT INTO [dbo].[Sucursal]
+           ([Nombre]
+           ,[Calle]
+           ,[NumeroInterior]
+           ,[NumeroExterior]
+           ,[CP]
+           ,[Colonia]
+           ,[Municipio]
+           ,[Estado]
+           ,[PaginaWeb])
+     VALUES
+           ('Portales','El rosario',12,25,0147,'Tierra Nueva','Azcapotzalco','CDMX','www.rosario.com')
+GO
+
+-------------Trigger---------------------------
+CREATE TRIGGER SucursalProductoAdd
+ON dbo.Sucursal
+AFTER INSERT
+AS
+BEGIN
+	Insert INTO SucursalProducto(Idproducto,IdSucursal)
+	Select (IdProducto),(inserted.IdSucursal)
+	FROM Producto, inserted
+END
+
+DROP TRIGGER SucursalProductoAdd
+
+SELECT *
+FROM SucursalProductoPrueba

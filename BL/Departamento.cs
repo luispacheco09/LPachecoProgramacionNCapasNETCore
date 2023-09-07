@@ -51,48 +51,55 @@ namespace BL
 
             return result;
         }
-        //public static ML.Result GetByIdArea(int IdArea)
-        //{
-        //    ML.Result result = new ML.Result();
+        public static ML.Result GetByIdArea(int IdArea)
+        {
+            ML.Result result = new ML.Result();
 
-        //    try
-        //    {
-        //        using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
-        //        {
-        //            var listaDepartamentos = (from departamentoGetByIdArea in context.Departamentos
-        //                                      where departamentoGetByIdArea.a).ToList();
+            try
+            {
+                using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
+                {
+                    var listaDepartamentos = (from deparatementoDL in context.Departamentos
+                                              join area in context.Areas on deparatementoDL.IdArea equals area.IdArea
+                                              where deparatementoDL.IdArea == IdArea
+                                              select new
+                                              {
+                                                  IdDepartamento = deparatementoDL.IdDepartamento,
+                                                  Nombre = deparatementoDL.Nombre,
+                                                  IdArea = deparatementoDL.IdArea,
+                                              }).ToList();
 
 
 
-        //            if (listaDepartamentos != null)
-        //            {
-        //                result.Objects = new List<object>();
+                    if (listaDepartamentos != null)
+                    {
+                        result.Objects = new List<object>();
 
-        //                foreach (var obj in listaDepartamentos)
-        //                {
-        //                    ML.Departamento departamento = new ML.Departamento();
-        //                    departamento.IdDepartamento = obj.IdDepartamento;
-        //                    departamento.Nombre = obj.Nombre;
-        //                    //departamento.Area.IdArea = obj.IdArea;
+                        foreach (var obj in listaDepartamentos)
+                        {
+                            ML.Departamento departamento = new ML.Departamento();
+                            departamento.IdDepartamento = obj.IdDepartamento;
+                            departamento.Nombre = obj.Nombre;
+                            //departamento.Area.IdArea = obj.IdArea;
 
-        //                    result.Objects.Add(departamento);
-        //                }
-        //                result.Correct = true;
-        //            }
-        //            else
-        //            {
-        //                result.Correct = false;
-        //                result.ErrorMessage = "La tabla no contiene datos";
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Correct = false;
-        //        result.ErrorMessage = ex.Message;
-        //    }
-        //    return result;
-        //}
+                            result.Objects.Add(departamento);
+                        }
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "La tabla no contiene datos";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
 
     }
 }

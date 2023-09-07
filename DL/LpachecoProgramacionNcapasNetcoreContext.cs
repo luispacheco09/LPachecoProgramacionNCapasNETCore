@@ -51,7 +51,7 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.; Database= LPachecoProgramacionNCapasNETCore; TrustServerCertificate=True; Trusted_Connection=True; User ID=sa; Password=pass@word1;");
+        => optionsBuilder.UseSqlServer("Server=.; Database=LPachecoProgramacionNCapasNETCore; TrustServerCertificate=True; Trusted_Connection=True; User ID=sa; Password=pass@word1;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -147,6 +147,10 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.IdAreaNavigation).WithMany(p => p.Departamentos)
+                .HasForeignKey(d => d.IdArea)
+                .HasConstraintName("FK__Departame__IdAre__4E88ABD4");
         });
 
         modelBuilder.Entity<Marca>(entity =>
@@ -179,6 +183,7 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+            entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(18, 2)");
 
             entity.HasOne(d => d.IdDepartamentoNavigation).WithMany(p => p.Productos)
                 .HasForeignKey(d => d.IdDepartamento)
@@ -237,7 +242,7 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
         {
             entity.HasKey(e => e.IdSucursal).HasName("PK__Sucursal__BFB6CD99D28ED906");
 
-            entity.ToTable("Sucursal");
+            entity.ToTable("Sucursal", tb => tb.HasTrigger("SucursalProductoAdd"));
 
             entity.Property(e => e.Calle)
                 .HasMaxLength(50)

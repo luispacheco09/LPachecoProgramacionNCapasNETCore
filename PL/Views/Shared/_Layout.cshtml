@@ -39,7 +39,18 @@
                         </li> 
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="SucursalProducto" asp-action="Index">Ver Sucursales</a>
-                        </li> 
+                        </li> <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Venta" asp-action="GetAllProducto">Venta</a>
+                        </li>
+                        <li class="nav-item">
+
+                            @*<div class="col-md-4">
+                            @Html.LabelFor(model => Model.Sucursal.Sucursales)
+                            @Html.DropDownListFor(model => Model.Sucursal.IdSucursal, new SelectList(Model.Sucursal.Sucursales, "IdSucursal", "Nombre"), "Selecciona una Sucursal", new { @id = "ddlSucursal", @class = "form-control" })
+                            </div>*@
+                        </li>
+                        @*<partial name="_LayoutDDL" />*@
+
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

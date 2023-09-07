@@ -1,0 +1,12 @@
+﻿@model ML.SucursalProducto
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<li class="nav-item">
+
+    <div class="col-md-4">
+    @Html.LabelFor(model => Model.Sucursal.Sucursales)
+    @Html.DropDownListFor(model => Model.Sucursal.IdSucursal, new SelectList(Model.Sucursal.Sucursales, "IdSucursal", "Nombre"), "Selecciona una Sucursal", new { @id = "ddlSucursal", @class = "form-control" })
+    </div>
+</li>

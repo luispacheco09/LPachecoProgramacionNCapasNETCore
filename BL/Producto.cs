@@ -20,8 +20,7 @@ namespace BL
                                          {
                                              IdProducto = productoDL.IdProducto,
                                              Nombre = productoDL.Nombre,
-                                             //PrecioUnitario = productoDL.PrecioUnitario,
-                                             //Stock = productoDL.Stock,
+                                             PrecioUnitario = productoDL.PrecioUnitario,
                                              CodigoBarras = productoDL.CodigoBarras,
                                              Imagen = productoDL.Imagen,
                                              Modelo = productoDL.Modelo,
@@ -29,7 +28,7 @@ namespace BL
                                              IdProveedor = productoDL.IdProveedor,
                                              //IdArea = productoDL.Departamento.Area.IdArea,
                                              IdDepartamento = productoDL.IdDepartamento,
-                                             //Descripcion = productoDL.Descripcion
+                                             Descripcion = productoDL.Descripcion
                                          });
                     if (listaProducto != null && listaProducto.ToList().Count > 0)
                     {
@@ -40,8 +39,7 @@ namespace BL
 
                             producto.IdProducto = obj.IdProducto;
                             producto.Nombre = obj.Nombre;
-                            //producto.PrecioUnitario = obj.PrecioUnitario;
-                            //producto.Stock = obj.Stock;
+                            producto.PrecioUnitario = obj.PrecioUnitario;
                             producto.CodigoBarras = obj.CodigoBarras;
                             producto.Imagen = obj.Imagen;
                             producto.Modelo = obj.Modelo;
@@ -92,8 +90,7 @@ namespace BL
                         producto.Nombre = query.Nombre;
                         producto.Descripcion = query.Descripcion;
                         producto.FechaIngreso = (query.FechaIngreso != null) ? query.FechaIngreso.Value.ToString("dd-MM-yyyy") : "0"; ;
-                        //producto.PrecioUnitario = obj.PrecioUnitario;
-                        //producto.Stock = obj.Stock;
+                        producto.PrecioUnitario = query.PrecioUnitario;
                         producto.CodigoBarras = query.CodigoBarras;
                         producto.Imagen = query.Imagen;
                         producto.Modelo = query.Modelo;
@@ -139,8 +136,7 @@ namespace BL
 
                     DLProducto.Nombre = producto.Nombre;
                     DLProducto.Descripcion = producto.Descripcion;
-                    //DLProducto.PrecioUnitario = producto.PrecioUnitario;
-                    //DLProducto.Stock = producto.Stock;
+                    DLProducto.PrecioUnitario = producto.PrecioUnitario;
                     DLProducto.IdDepartamento = producto.Departamento.IdDepartamento;
                     DLProducto.FechaIngreso = DateTime.Now;
                     DLProducto.CodigoBarras = producto.CodigoBarras;
@@ -188,8 +184,7 @@ namespace BL
                         query.IdProducto = producto.IdProducto;
                         query.Nombre = producto.Nombre;
                         query.Descripcion = producto.Descripcion;
-                        //query.PrecioUnitario = producto.PrecioUnitario;
-                        //query.Stock = producto.Stock;
+                        query.PrecioUnitario = producto.PrecioUnitario;
                         query.IdDepartamento = producto.Departamento.IdDepartamento;
                         query.CodigoBarras = producto.CodigoBarras;
                         query.Imagen = producto.Imagen;
