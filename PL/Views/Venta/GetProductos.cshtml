@@ -38,16 +38,18 @@
                             Learn more
                             </button>*@
                                     @*<button type="button" class="btn btn-danger flex-fill ms-1"><i class="fa-solid fa-cart-shopping"></i>Agregar al carrito</button>*@
-                                    <form method="post" action="@Url.Action("AddCart", "Venta")">
-                                        <input type="hidden" name="IdProducto" value="@producto.Producto.IdProducto" />
+                                    @* <form method="post" action="@Url.Action("AddCart", "Venta")">
+                                        <input name="IdProducto" value="@producto.IdSucursalProducto" />
                                         <div class="col-md-4">
-                                            <label asp-for="IdProducto" hidden class="hidden"></label>
-                                            <input asp-for="IdProducto" hidden class="form-control hidden" />
+                                            <label asp-for="IdSucursalProducto"  class="hidden"></label>
+                                            <input asp-for="IdSucursalProducto"  class="form-control hidden" />
                                         </div>
                                         <button type="submit" class="btn btn-danger flex-fill ms-1">
                                             <i class="fa-solid fa-cart-shopping"></i> Agregar al carrito
                                         </button>
-                                    </form>
+                                    </form> *@
+
+                                    <a class="btn btn-primary flex-fill ms-1" href="@Url.Action("AddCart", "Venta", new { IdSucursalProducto = producto.IdSucursalProducto })">Agregar al carrito</a>
                                 </div>
                             </div>
                         </div>

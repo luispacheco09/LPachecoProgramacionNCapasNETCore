@@ -130,7 +130,7 @@ Fecha DATETIME
 
 CREATE TABLE VentaProducto(
 IdVentaProducto INT PRIMARY KEY IDENTITY(1,1),
-IdVenta INT REFERENCES Venta(IdVenta),
+--IdVenta INT REFERENCES Venta(IdVenta),
 IdSucursalProducto INT REFERENCES SucursalProducto(IdSucursalProducto),
 Cantidad INT NOT NULL
 )

@@ -130,6 +130,84 @@ namespace BL
                 result.ErrorMessage = ex.Message;
             }
             return result;
+        }   
+        public static ML.Result GetProductbySucProduct( int IdSucursalProducto)
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
+                {
+                    var listaSucursal = (from sucursalPDL in context.SucursalProductos
+                                         join sucursal in context.Sucursals on sucursalPDL.IdSucursal equals sucursal.IdSucursal
+                                         join producto in context.Productos on sucursalPDL.IdProducto equals producto.IdProducto
+                                         where sucursalPDL.IdSucursalProducto == IdSucursalProducto 
+                                         select new
+                                         {
+                                             IdSucursalProducto = sucursalPDL.IdSucursalProducto,
+                                             IdSucursal = sucursalPDL.IdSucursal,
+                                             IdProducto = sucursalPDL.IdProducto,
+                                             Stock = sucursalPDL.Stock,
+                                             ProductoNombre = producto.Nombre,
+                                             Descripcion = producto.Descripcion,
+                                             idDepartamento = producto.IdDepartamento,
+                                             Imagen = producto.Imagen,
+                                             Modelo = producto.Modelo,
+                                             PrecioUnitario = producto.PrecioUnitario,
+                                             SucursalNombre = sucursal.Nombre
+                                         }).FirstOrDefault();
+
+                    if (listaSucursal != null)
+                    {
+                        result.Objects = new List<object>();
+                       
+                        ML.SucursalProducto sucursalp = new ML.SucursalProducto();
+                        sucursalp.IdSucursalProducto = listaSucursal.IdSucursalProducto;
+                        sucursalp.Stock = listaSucursal.Stock;
+
+                        sucursalp.Sucursal = new ML.Sucursal();
+                        sucursalp.Sucursal.IdSucursal = listaSucursal.IdSucursal.Value;
+                        sucursalp.Sucursal.Nombre = listaSucursal.SucursalNombre;
+                        sucursalp.Producto = new ML.Producto();
+                        sucursalp.Producto.IdProducto = listaSucursal.IdProducto.Value;
+                        sucursalp.Producto.Nombre = listaSucursal.ProductoNombre;
+                        sucursalp.Producto.Descripcion = listaSucursal.Descripcion;
+                        sucursalp.Producto.Imagen = listaSucursal.Imagen;
+                        sucursalp.Producto.Modelo = listaSucursal.Modelo;
+                        sucursalp.Producto.PrecioUnitario = listaSucursal.PrecioUnitario;
+
+                        //ML.VentaProducto sucursalp = new ML.VentaProducto();
+                        //sucursalp.SucursalProducto = new ML.SucursalProducto();
+                        //sucursalp.SucursalProducto.IdSucursalProducto = listaSucursal.IdSucursalProducto;
+                        //sucursalp.SucursalProducto.Stock = listaSucursal.Stock;
+
+                        //sucursalp.SucursalProducto.Sucursal = new ML.Sucursal();
+                        //sucursalp.SucursalProducto.Sucursal.IdSucursal = listaSucursal.IdSucursal.Value;
+                        //sucursalp.SucursalProducto.Sucursal.Nombre = listaSucursal.SucursalNombre;
+                        //sucursalp.SucursalProducto.Producto = new ML.Producto();
+                        //sucursalp.SucursalProducto.Producto.IdProducto = listaSucursal.IdProducto.Value;
+                        //sucursalp.SucursalProducto.Producto.Nombre = listaSucursal.ProductoNombre;
+                        //sucursalp.SucursalProducto.Producto.Descripcion = listaSucursal.Descripcion;
+                        //sucursalp.SucursalProducto.Producto.Imagen = listaSucursal.Imagen;
+                        //sucursalp.SucursalProducto.Producto.Modelo = listaSucursal.Modelo;
+                        //sucursalp.SucursalProducto.Producto.PrecioUnitario = listaSucursal.PrecioUnitario;
+
+                        result.Object = sucursalp;
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se encontraron datos de los poductos"; ;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
         }
 
         public static ML.Result UpdateStock(int IdStock, int Stock)
