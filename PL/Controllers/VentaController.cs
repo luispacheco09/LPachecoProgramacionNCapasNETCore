@@ -7,6 +7,13 @@ namespace PL.Controllers
 {
     public class VentaController : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        public VentaController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -31,34 +38,27 @@ namespace PL.Controllers
             productoSuc.SucuralesProductos = resultSucursal.Objects;
             return PartialView("GetProductos", productoSuc);
         }
+
+        //public IActionResult GetProducto(int IdDepartamento)
+        //{
+        //    bool sinStock = _configuration.GetValue<bool>("MostrarProductosSinStock");
+        //    ML.SucursalProducto productoSuc = new ML.SucursalProducto();
+        //    ML.Result resultSucursal = BL.SucursalProducto.GetProductbySucDepto(IdDepartamento);
+        //    if (!sinStock)
+        //    {
+
+        //    }
+        //    productoSuc.SucuralesProductos = resultSucursal.Objects;
+        //    return PartialView("GetProductos", productoSuc);
+        //}
         public JsonResult GetDepartamentosList(int IdArea)
         {
             ML.Result resultDepartamentos = BL.Departamento.GetByIdArea(IdArea);
             return Json(resultDepartamentos.Objects);
         }
 
-
-        //public IActionResult AddCart(int IdProducto)
-        //{
-        //    List<int> carrito;
-        //    var cart = HttpContext.Session.GetString("Session");
-        //    if (cart == null)
-        //    {
-        //        carrito = new List<int>();
-        //    }
-        //    else
-        //    {
-        //        carrito = JsonSerializer.Deserialize<List<int>>(cart);
-        //    }
-        //    carrito.Add(IdProducto);
-        //    HttpContext.Session.SetString("Session", JsonSerializer.Serialize(carrito));
-
-        //    return RedirectToAction("Cart", "Venta");
-        //}
-
-        //tercero
         public IActionResult AddCart(int IdSucursalProducto)
-            {
+        {
             var session = HttpContext.Session.GetString("Session");
             List<ML.VentaProducto> listaProductos;
 
@@ -75,7 +75,7 @@ namespace PL.Controllers
                 // Verifica si el producto ya está en el carrito
                 if (listaProductos.Any(vp => vp.SucursalProducto.IdSucursalProducto == IdSucursalProducto))
                 {
-                    return RedirectToAction("AumentarCantidad", "Venta");
+                    return RedirectToAction("AumentarCantidad", "Venta", new { IdSucursalProducto = IdSucursalProducto, agregar = true });
                 }
             }
 
@@ -95,6 +95,22 @@ namespace PL.Controllers
             return RedirectToAction("Cart", "Venta");
         }
 
+        public IActionResult RemoveFromCart(int IdSucursalProducto)
+        {
+            var session = HttpContext.Session.GetString("Session");
+            List<ML.VentaProducto> listaProductos;
+
+            if (session != null)
+            {
+                listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(session);
+
+                listaProductos.RemoveAll(vp => vp.SucursalProducto.IdSucursalProducto == IdSucursalProducto);
+                // Guarda la lista actualizada en la sesión
+                HttpContext.Session.SetString("Session", JsonSerializer.Serialize(listaProductos));
+            }
+            return RedirectToAction("Cart", "Venta");
+        }
+
         public IActionResult Cart()
         {
             var cart = HttpContext.Session.GetString("Session");
@@ -109,201 +125,61 @@ namespace PL.Controllers
 
             return View(carrito);
         }
-        public IActionResult AumentarCantidad()
+
+        public IActionResult AumentarCantidad(int IdSucursalProducto, bool agregar)
         {
-            var cantidad = HttpContext.Session.GetString("Session");
-            List<ML.VentaProducto> ventaProductos = new List<ML.VentaProducto>();
-            foreach (var item in cantidad)
+            var session = HttpContext.Session.GetString("Session");
+            List<ML.VentaProducto> listaProductos;
+
+            listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(session);
+            var productoExistente = listaProductos.FirstOrDefault(vp => vp.SucursalProducto.IdSucursalProducto == IdSucursalProducto);
+
+            if (productoExistente != null)
             {
-                
-            }
+                if (agregar && productoExistente.Cantidad < productoExistente.SucursalProducto.Stock)
+                {
+                    productoExistente.Cantidad++;
+                }
+                else if (!agregar && productoExistente.Cantidad > 0)
+                {
+                    productoExistente.Cantidad--;
+
+                    if (!agregar && productoExistente.Cantidad <= 0)
+                    {
+                        return RedirectToAction("RemoveFromCart", "Venta", new { IdSucursalProducto = IdSucursalProducto });
+                    }
+                }
+
+                HttpContext.Session.SetString("Session", JsonSerializer.Serialize(listaProductos));
                 return RedirectToAction("Cart", "Venta");
+            }
+            return RedirectToAction("Cart", "Venta");
+
         }
-
-        //segundo
-        //public IActionResult AddCart(int IdSucursalProducto)
+        //public IActionResult AumentarCantidad(int IdSucursalProducto, bool agregar)
         //{
+        //    var session = HttpContext.Session.GetString("Session");
         //    List<ML.VentaProducto> listaProductos;
 
-        //    var session = HttpContext.Session.GetString("Session");
-        //    if (session == null)
+        //    listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(session);
+        //    var productoExistente = listaProductos.FirstOrDefault(vp => vp.SucursalProducto.IdSucursalProducto == IdSucursalProducto);
+
+        //    if (productoExistente != null)
         //    {
-
-        //        //ML.VentaProducto venta = new ML.VentaProducto();
-
-        //        //List<ML.VentaProducto> listaProductos = new List<ML.VentaProducto>();
-        //        listaProductos = new List<ML.VentaProducto>();
-
-        //        //listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(session);
-
-        //        //venta.SucursalProducto = new ML.SucursalProducto();
-        //        //venta.SucursalProducto.IdSucursalProducto = IdSucursalProducto;
-        //        //venta.Cantidad = 1;
-        //        //listaProductos.Add(venta);
-
-
-
-        //        //var resultProductos = BL.SucursalProducto.GetbySucursal(IdSucursalProducto);
-
-        //        //ventaProductos.Add(resultProductos);
-        //    }
-        //    else
-        //    {
-        //        //List<ML.VentaProducto>
-        //        listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(session);
-
-        //        //foreach (var item in listaProductos)
-        //        //{
-        //        //    ML.VentaProducto vp = new ML.VentaProducto();
-
-        //        //    item.SucursalProducto = new ML.SucursalProducto();
-
-        //        //    if (IdSucursalProducto == item.SucursalProducto.IdSucursalProducto)
-        //        //    {
-        //        //        return RedirectToAction("AgregarOtroProducto", "Venta");
-
-        //        //    }
-        //        //    vp.Cantidad = 1;
-        //        //    vp.SucursalProducto = new ML.SucursalProducto();
-        //        //    vp.SucursalProducto.IdSucursalProducto = IdSucursalProducto;
-        //        //    listaProductos.Add(vp);
-        //        //}
-        //        //listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(carrito);
-
-        //    }
-
-        //    foreach (var item in listaProductos)
-        //    {
-        //        ML.VentaProducto vp = new ML.VentaProducto();
-
-        //        item.SucursalProducto = new ML.SucursalProducto();
-
-        //        if (IdSucursalProducto == item.SucursalProducto.IdSucursalProducto)
+        //        if (agregar && productoExistente.Cantidad < productoExistente.SucursalProducto.Stock)
         //        {
-        //            return RedirectToAction("AgregarOtroProducto", "Venta");
-
+        //            productoExistente.Cantidad++;
         //        }
-        //        vp.Cantidad = 1;
-        //        vp.SucursalProducto = new ML.SucursalProducto();
-        //        vp.SucursalProducto.IdSucursalProducto = IdSucursalProducto;
-        //        listaProductos.Add(vp);
-        //    }
-        //    //listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(carrito);
-        //    HttpContext.Session.SetString("Session", JsonSerializer.Serialize(listaProductos));
-        //    //pachecocruzluis@gmail.com
-        //    //wall69@xñ4
-        //    return RedirectToAction("Cart", "Venta");
-        //}
-
-        //public IActionResult AddCart(int IdSucursalProducto)
-        //{
-        //    List<ML.VentaProducto> listaProductos;
-
-        //    var session = HttpContext.Session.GetString("Session");
-        //    if (session == null)
-        //    {
-
-        //        ML.VentaProducto venta = new ML.VentaProducto();
-
-        //        //List<ML.VentaProducto> listaProductos = new List<ML.VentaProducto>();
-        //        listaProductos = new List<ML.VentaProducto>();
-
-        //        //listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(session);
-
-        //        venta.SucursalProducto = new ML.SucursalProducto();
-        //        venta.SucursalProducto.IdSucursalProducto = IdSucursalProducto;
-        //        venta.Cantidad = 1;
-        //        listaProductos.Add(venta);
-
-
-
-        //        //var resultProductos = BL.SucursalProducto.GetbySucursal(IdSucursalProducto);
-
-        //        //ventaProductos.Add(resultProductos);
-        //    }
-        //    else
-        //    {
-        //        //List<ML.VentaProducto>
-        //            listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(session);
-
-        //        foreach (var item in listaProductos)
+        //        else
         //        {
-        //            ML.VentaProducto vp = new ML.VentaProducto();
-
-        //            item.SucursalProducto = new ML.SucursalProducto();
-
-        //            if (IdSucursalProducto == item.SucursalProducto.IdSucursalProducto)
-        //            {
-        //                return RedirectToAction("AgregarOtroProducto", "Venta");
-
-        //            }
-        //            vp.Cantidad = 1;
-        //            vp.SucursalProducto = new ML.SucursalProducto();
-        //            vp.SucursalProducto.IdSucursalProducto = IdSucursalProducto;
-        //            listaProductos.Add(vp);
+        //            ViewBag.Mensaje = "No puede seleccionar más de lo que hay en stock";
         //        }
-        //        //listaProductos = JsonSerializer.Deserialize<List<ML.VentaProducto>>(carrito);
 
+        //        HttpContext.Session.SetString("Session", JsonSerializer.Serialize(listaProductos));
+        //        return RedirectToAction("Cart", "Venta");
         //    }
-
-        //    HttpContext.Session.SetString("Session", JsonSerializer.Serialize(listaProductos));
-
         //    return RedirectToAction("Cart", "Venta");
-        //}
 
-
-        //primero
-        //public IActionResult Cart()
-        //{
-        //    var cart = HttpContext.Session.GetString("Session");
-        //    if (cart == null)
-        //    {
-        //        ViewData["Mensaje"] = "El carrito esta vacio";
-        //        return View();
-        //    }
-        //    ML.VentaProducto vp = new ML.VentaProducto();
-
-        //    List<ML.VentaProducto> carrito = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
-        //    List<ML.VentaProducto> vps = new List<ML.VentaProducto>();
-        //    ML.Producto producto = new ML.Producto();
-        //    foreach (var item in carrito)
-        //    {
-        //        //ML.Result resultProductos = BL.Producto.GetById(id);
-        //        //productos.Add(producto);
-        //        vp.Cantidad = item.Cantidad;
-        //        vp.SucursalProducto = new ML.SucursalProducto();
-        //        item.SucursalProducto = new ML.SucursalProducto();
-
-        //        vp.SucursalProducto.IdSucursalProducto = item.SucursalProducto.IdSucursalProducto;
-
-        //        vps.Add(vp);
-        //    }
-
-        //    return View(vps);
-        //}
-
-        //public IActionResult Cart()
-        //{
-        //    var cart = HttpContext.Session.GetString("Session");
-        //    if (cart == null)
-        //    {
-        //        ViewData["Mensaje"] = "El carrito esta vacio";
-        //        return View();
-        //    }
-
-        //     List<int> carrito = JsonSerializer.Deserialize<List<int>>(cart);
-        //    List<ML.Producto> productos = new List<ML.Producto>();
-        //    //ML.Producto resultProductos = new ML.Producto();
-        //    foreach (int id in carrito)
-        //    {
-        //        ML.Result producto = BL.Producto.GetById(id);
-        //        //productos.Add(producto);
-        //         //resultProductos.Productos = producto.Objects.ToList();
-        //        //productos.AddRange(producto.Objects);
-
-        //    }
-
-        //    return View();
         //}
     }
 }
