@@ -210,7 +210,7 @@ namespace BL
             return result;
         }
 
-        public static ML.Result UpdateStock(int IdStock, int Stock)
+        public static ML.Result UpdateStock(int? IdStock, int? Stock)
         {
             ML.Result result = new ML.Result();
             try

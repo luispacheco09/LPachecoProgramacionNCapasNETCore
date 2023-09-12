@@ -1,6 +1,7 @@
 ﻿using BL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
 using System.Text.Json;
 
 namespace PL.Controllers
@@ -123,6 +124,14 @@ namespace PL.Controllers
 
             List<ML.VentaProducto> carrito = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
 
+            decimal? precioTotal = 0;
+            // Calcular el subtotal para cada producto en el carrito
+            foreach (var producto in carrito)
+            {
+                producto.total = producto.Cantidad * producto.SucursalProducto.Producto.PrecioUnitario;
+                precioTotal += producto.total; // Agrega el subtotal al total
+            }
+            ViewBag.Total = precioTotal;
             return View(carrito);
         }
 
@@ -139,6 +148,8 @@ namespace PL.Controllers
                 if (agregar && productoExistente.Cantidad < productoExistente.SucursalProducto.Stock)
                 {
                     productoExistente.Cantidad++;
+                    //ViewBag.Mensaje = "Se ha agregado correctamente el producto";
+
                 }
                 else if (!agregar && productoExistente.Cantidad > 0)
                 {
@@ -148,12 +159,19 @@ namespace PL.Controllers
                     {
                         return RedirectToAction("RemoveFromCart", "Venta", new { IdSucursalProducto = IdSucursalProducto });
                     }
+                    //ViewBag.Mensaje = "Se ha quitado correctamente el producto";
+
                 }
 
                 HttpContext.Session.SetString("Session", JsonSerializer.Serialize(listaProductos));
+
                 return RedirectToAction("Cart", "Venta");
+                //return PartialView("Modal");
+
             }
             return RedirectToAction("Cart", "Venta");
+
+            //return PartialView("Modal");
 
         }
         //public IActionResult AumentarCantidad(int IdSucursalProducto, bool agregar)
@@ -181,5 +199,96 @@ namespace PL.Controllers
         //    return RedirectToAction("Cart", "Venta");
 
         //}
+        public IActionResult CheckOut()
+        {
+            var cart = HttpContext.Session.GetString("Session");
+            List<ML.VentaProducto> carritoList = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
+
+
+            var domain = "https://localhost:7121/";
+            var options = new SessionCreateOptions
+            {
+                SuccessUrl = domain + $"Venta/OrderConfirmation",
+                CancelUrl = domain + "Venta/Failed",
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+                CustomerEmail = "pachecoluis@gmail.com"
+            };
+
+            foreach (var item in carritoList)
+            {
+                //item.SucursalProducto.Producto = new ML.Producto();
+
+                var sessionListItems = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(item.SucursalProducto.Producto.PrecioUnitario*100),
+                        Currency = "mxn",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.SucursalProducto.Producto.Nombre.ToString(),
+                        }
+                    },
+                    Quantity = item.Cantidad
+                };
+                options.LineItems.Add(sessionListItems);
+            }
+
+            var service = new SessionService();
+            Session session = service.Create(options);
+
+            TempData["Session"] = session.Id;
+            Response.Headers.Add("Location", session.Url);
+
+            return new StatusCodeResult(303);
+        }
+
+        public IActionResult OrderConfirmation()
+        {
+            var service = new SessionService();
+            Session session = service.Get(TempData["Session"].ToString());
+            if (session.PaymentStatus == "paid")
+            {
+                var cart = HttpContext.Session.GetString("Session");
+
+                if (!string.IsNullOrEmpty(cart))
+                {
+                    List<ML.VentaProducto> carrito = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
+
+                    foreach (var venta in carrito)
+                    {
+                        // Restar la cantidad en el carrito del stock total
+                        ML.Result resultProductos = BL.SucursalProducto.GetProductbySucProduct(venta.SucursalProducto.IdSucursalProducto);
+                        ML.SucursalProducto producto = (ML.SucursalProducto)resultProductos.Object;
+
+                        if (producto != null)
+                        {
+                            producto.Stock -= venta.Cantidad;
+                            // Actualizar el stock en la base de datos
+                            BL.SucursalProducto.UpdateStock(venta.SucursalProducto.IdSucursalProducto, producto.Stock);
+                        }
+                    }
+
+                    // Limpia la sesión después de restar el stock
+                    HttpContext.Session.Remove("Session");
+                }
+
+                var transaction = session.PaymentIntentId.ToString();
+
+                return View("Success");
+            }
+
+            return View("Failed");
+        }
+        public IActionResult Success()
+        {
+            return View();
+        }
+        public IActionResult Failed()
+        {
+            return View();
+        }
+
     }
 }

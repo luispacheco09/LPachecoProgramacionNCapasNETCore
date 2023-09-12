@@ -4,8 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
 @using (Html.BeginForm("GetSucursal", "SucursalProducto", FormMethod.Post, new { enctype = "multipart/form-data" })) //se hace uso del form Post
 {
     <div id="formulario" >
@@ -21,7 +19,7 @@
 
         <div class="row">
             <div class="col-md-2 ">
-                <input type="submit" class="btn btn-success" value="Mostrar sucursal" onclick="return mostrarSucursal();" />
+                <input type="submit" class="btn btn-primary" value="Mostrar sucursal" onclick="return mostrarSucursal();" />
             </div>
         </div>
     </div>

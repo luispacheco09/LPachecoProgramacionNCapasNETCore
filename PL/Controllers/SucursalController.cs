@@ -35,7 +35,7 @@ namespace PL.Controllers
             }
             else
             {
-                ML.Result result = BL.Producto.GetById(IdSucursal.Value);
+                ML.Result result = BL.Sucursal.GetById(IdSucursal.Value);
 
                 sucursal.IdSucursal = ((ML.Sucursal)result.Object).IdSucursal;
                 sucursal.Nombre = ((ML.Sucursal)result.Object).Nombre;

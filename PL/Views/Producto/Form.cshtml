@@ -4,8 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Form</h1>
-
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
@@ -41,16 +39,18 @@
             <span asp-validation-for="PrecioUnitario" class="text-danger" id="lblCurpErrorMessage"></span>
             </div>
 
-        </div>
-        <br>
-
-        <div class="row">
             <div class="col-md-4">
                 @Html.LabelFor(producto => Model.Proveedor.Proveedores)
                 @Html.DropDownListFor(producto => Model.Proveedor.IdProveedor, new SelectList(Model.Proveedor.Proveedores, "IdProveedor", "Nombre"), "Selecciona un Numero ", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => Model.Proveedor.IdProveedor, "", new { @class = "text-danger", @id = "lblProveedorErrorMessage" })
 
             </div>
+
+        </div>
+        <br>
+
+        <div class="row">
+          
 
             <div class="col-md-4">
                 @Html.LabelFor(producto => Model.Marca.Marcas)
@@ -59,14 +59,21 @@
 
             </div>
 
-            <div class="col-md-4">
+            @* <div class="col-md-4">
                 @Html.LabelFor(producto => Model.Departamento.Departamentos)
                 @Html.DropDownListFor(producto => Model.Departamento.IdDepartamento, new SelectList(Model.Departamento.Departamentos, "IdDepartamento", "Nombre"), "Selecciona un Departamento", new { @id = "ddlDepartamento", @class = "form-control" })
                 @Html.ValidationMessageFor(model => Model.Departamento.IdDepartamento, "", new { @class = "text-danger", @id = "lblProveedorErrorMessage" })
 
+            </div> *@
+
+            <div class="col-md-4">
+                @Html.LabelFor(producto => Model.Departamento.Area.Areas)
+                @Html.DropDownListFor(producto => Model.Departamento.Area.IdArea, new SelectList(Model.Departamento.Area.Areas, "IdArea", "Nombre"), "Selecciona un Area", new { @id = "ddlArea", @class = "form-control" })
+                @Html.ValidationMessageFor(model => Model.Departamento.Area.IdArea, "", new { @class = "text-danger", @id = "lblDepartamentoErrorMessage" })
+
             </div>
 
-            @*<div class="col-md-4">
+            <div class="col-md-4">
             @Html.LabelFor(model => Model.Departamento.Departamentos)
 
             @if (Model.Departamento.Departamentos != null)
@@ -78,57 +85,24 @@
             @Html.DropDownListFor(model => model.Departamento.IdDepartamento, new SelectList(string.Empty, "IdDepartamento", "Nombre"), "Selecciona un Departamento3", htmlAttributes: new { @id = "ddlDepartamento", @class = "form-control" })
             }
 
-            </div>*@
+            </div>
 
         </div>
 
-
-        @*        <div class="row">
-        <div class="col-md-4">
-        <label asp-for="Proveedor.IdProveedor"></label>
-        <select asp-for="Proveedor.IdProveedor" asp-items="new SelectList(Model.Proveedor.Proveedores, "IdProveedor", "Nombre")" class="form-control">
-        <option value="">Selecciona un Numero</option>
-        </select>
-        <span asp-validation-for="Proveedor.IdProveedor" class="text-danger" id="lblProveedorErrorMessage"></span>
-        </div>
-
-        <div class="col-md-4">
-        <label asp-for="Departamento.Area.IdArea"></label>
-        <select asp-for="Departamento.Area.IdArea" asp-items="new SelectList(Model.Departamento.Area.Areas, "IdArea", "Nombre")" class="form-control" id="ddlArea">
-        <option value="">Selecciona un Area</option>
-        </select>
-        <span asp-validation-for="Departamento.Area.IdArea" class="text-danger" id="lblDepartamentoErrorMessage"></span>
-        </div>
-
-        <div class="col-md-4">
-        <label asp-for="Departamento.IdDepartamento"></label>
-        @if (Model.Departamento.Departamentos != null)
-        {
-        <select asp-for="Departamento.IdDepartamento" asp-items="new SelectList(Model.Departamento.Departamentos, "IdDepartamento", "Nombre")" class="form-control" id="ddlDepartamento">
-        <option value="">Selecciona un Departamento2</option>
-        </select>
-        }
-        else
-        {
-        <select asp-for="Departamento.IdDepartamento" asp-items="new SelectList(string.Empty, "IdDepartamento", "Nombre")" class="form-control" id="ddlDepartamento">
-        <option value="">Selecciona un Departamento3</option>
-        </select>
-        }
-        </div>
-        </div>*@
         <br>
 
         <div class="row">
-            <div class="col-md-4">
-                <label asp-for="Descripcion"></label>
-                <input asp-for="Descripcion" class="form-control" />
-                <span asp-validation-for="Descripcion" class="text-danger" id="lblCurpErrorMessage"></span>
-            </div>
 
             <div class="col-md-4">
                 <label asp-for="CodigoBarras"></label>
                 <input asp-for="CodigoBarras" class="form-control" />
                 <span asp-validation-for="CodigoBarras" class="text-danger" id="lblCurpErrorMessage"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Descripcion"></label>
+                <textarea asp-for="Descripcion" class="form-control"></textarea>
+                <span asp-validation-for="Descripcion" class="text-danger" id="lblCurpErrorMessage"></span>
             </div>
 
             <div class="col-md-4">
@@ -139,16 +113,11 @@
         </div>
         <br>
         <div class="row">
-           @* <div class="col-md-4">
-                <label asp-for="Descripcion"></label>
-                <input asp-for="Descripcion" class="form-control" />
-                <span asp-validation-for="Descripcion" class="text-danger" id="lblDescripcionErrorMessage"></span>
-            </div>
-*@
+          
             <div class="col-md-4">
-                <label asp-for="Imagen"></label>
-                <input type="file" name="Imagen" id="fuimgProducto" onchange="imgPreview(event);" />
-                <span asp-validation-for="Imagen" class="text-danger" id="lblImagenErrorMessage"></span>
+                @Html.LabelFor(model => Model.Imagen)
+                <input type="file" name="imgProducto" id="fuimgProducto" onchange="imgPreview(event);" />
+                @Html.ValidationMessageFor(model => Model.Imagen, "", new { @class = "text-danger", @id = "lblImagenErrorMessage" })
 
                 @if (Model.Imagen != null)
                 {
@@ -173,6 +142,8 @@
     </form>
 </div>
 
-<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 <script src="~/Scripts/Producto/PreviewImage.js"></script>
+<script src="~/Scripts/Producto/DropDownList_Area_producto.js"></script>

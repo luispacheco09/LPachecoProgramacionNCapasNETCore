@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PL.Data;
+using Stripe;
 
 namespace PL
 {
@@ -49,6 +50,9 @@ namespace PL
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            //Add stripe
+            StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
             app.UseAuthorization();
 

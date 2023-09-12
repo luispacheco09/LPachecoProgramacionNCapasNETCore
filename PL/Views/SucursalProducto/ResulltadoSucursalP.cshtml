@@ -20,7 +20,7 @@
                     <tr>
                         @*<td style="text-align: center; vertical-align: middle;"><a class="btn btn-warning glyphicon" href="@Url.Action("Form", "Producto", new { IdProducto = producto.Producto.IdProducto })"><i class="bi bi-pencil-square" style="color: ivory"></i></a></td>*@
                         <td style="text-align: center; vertical-align: middle;">
-                            <a class="btn btn-warning stock-btn" href="#" id="EditarStock" data-idstock="@producto.IdSucursalProducto">Editar</a>
+                            <a class="btn btn-outline-warning stock-btn" href="#" id="EditarStock" data-idstock="@producto.IdSucursalProducto"><img src="/Images/editar.png"></a>
                         </td>
                         <td style="display :none;">@producto.Producto.IdProducto </td>
                         <td>@producto.Sucursal.Nombre</td>
@@ -28,7 +28,7 @@
                         <td id="stockValor">@producto.Stock </td>
 
 
-                        <td style="text-align: center; vertical-align: middle;"><a class="btn btn-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "SucursalProducto", new { IdSucursalProducto = producto.IdSucursalProducto})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><i class="bi bi-eraser-fill" style="color: mintcream"></i></a></td>
+                        <td style="text-align: center; vertical-align: middle;"><a class="btn btn-outline-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "SucursalProducto", new { IdSucursalProducto = producto.IdSucursalProducto})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><img src="/Images/remove.png">   </a></td>
                     </tr>
                 }
             </tbody>

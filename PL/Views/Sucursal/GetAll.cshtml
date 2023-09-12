@@ -4,17 +4,16 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>GetAll</h1>
 <div class="container">
     <div class=row>
-        <div class="text-center">
+        <div class="text-center pb-4">
             <h2>Sucursales</h2>
 
         </div>
-        <div class="col-md-6 col-sm-12">
+        @* <div class="col-md-6 col-sm-12">
             <h2>Detalle</h2>
 
-        </div>
+        </div> *@
     </div>
 
     <div class="row">
@@ -26,8 +25,8 @@
     <div class="row">
         <div class="col">
 
-            <div style="float:inline-end;">
-                @Html.ActionLink("+", "Form", "Sucursal", htmlAttributes: new { @class = "btn btn-success" })
+            <div style="float:inline-end;" class="mb-3">
+                @Html.ActionLink("+", "Form", "Sucursal", htmlAttributes: new { @class = "btn btn-success " })
             </div>
         </div>
     </div>
@@ -53,13 +52,13 @@
                         @foreach (ML.Sucursal sucursal in Model.Sucursales)
                         {
                             <tr>
-                                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-warning glyphicon" href="@Url.Action("Form", "Sucursal", new { IdSucursal = sucursal.IdSucursal })"><i class="bi bi-pencil-square" style="color: ivory"></i></a></td>
+                                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-outline-warning glyphicon" href="@Url.Action("Form", "Sucursal", new { IdSucursal = sucursal.IdSucursal })"><img src="/Images/editar.png"></a></td>
                                 <td style="display :none;">@sucursal.IdSucursal </td>
                                 <td>@sucursal.Nombre </td>
                                 <td>@sucursal.Calle @sucursal.NumeroInterior @sucursal.NumeroExterior, @sucursal.Colonia @sucursal.Municipio @sucursal.CP, @sucursal.Estado </td>
                                 <td>@sucursal.PaginaWeb</td>
-                                @*<td class="text-success">@user.UsuarioRol.RolId)</td>*@
-                                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "Sucursal", new { IdSucursal = sucursal.IdSucursal})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><i class="bi bi-eraser-fill" style="color: mintcream"></i></a></td>
+                                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-outline-danger glyphicon-trash" href="@Url.Action("Delete", "Sucursal", new { IdSucursal = sucursal.IdSucursal})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><img src="/Images/remove.png"></a></td>
+
                             </tr>
                         }
                     </tbody>

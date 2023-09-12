@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BL
 {
@@ -16,6 +17,10 @@ namespace BL
                 using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
                 {
                     var listaProducto = (from productoDL in context.Productos
+                                         join proveedor in context.Proveedors on productoDL.IdProveedor equals proveedor.IdProveedor
+                                         join marca in context.Marcas on productoDL.IdMarca equals marca.IdMarca
+                                         join departamento in context.Departamentos on productoDL.IdDepartamento equals departamento.IdDepartamento
+                                         join area in context.Areas on departamento.IdArea equals area.IdArea
                                          select new
                                          {
                                              IdProducto = productoDL.IdProducto,
@@ -25,9 +30,12 @@ namespace BL
                                              Imagen = productoDL.Imagen,
                                              Modelo = productoDL.Modelo,
                                              IdMarca = productoDL.IdMarca,
+                                             MarcaNombre = marca.Nombre,
                                              IdProveedor = productoDL.IdProveedor,
-                                             //IdArea = productoDL.Departamento.Area.IdArea,
+                                             ProveedorNombre = proveedor.Nombre,
+                                             IdArea = departamento.IdArea,
                                              IdDepartamento = productoDL.IdDepartamento,
+                                             DepartamentoNombre = departamento.Nombre,
                                              Descripcion = productoDL.Descripcion
                                          });
                     if (listaProducto != null && listaProducto.ToList().Count > 0)
@@ -45,14 +53,18 @@ namespace BL
                             producto.Modelo = obj.Modelo;
                             producto.Marca = new ML.Marca();
                             producto.Marca.IdMarca = obj.IdMarca.Value;
+                            producto.Marca.Nombre = obj.MarcaNombre;
                             producto.Proveedor = new ML.Proveedor();
                             producto.Proveedor.IdProveedor = obj.IdProveedor.Value;
+                            producto.Proveedor.Nombre = obj.ProveedorNombre;
                             producto.Departamento = new ML.Departamento();
-                            producto.Departamento.IdDepartamento = obj.IdDepartamento.Value;
+                            producto.Departamento.Nombre = obj.DepartamentoNombre;
+                            //producto.Proveedor.Nombre = obj.ProveedorNombre;
+
                             //producto.Departamento.Area = new ML.Area();
                             //producto.Departamento.Area.IdArea = obj.IdArea;
 
-                            //producto.Descripcion = obj.Descripcion;
+                            producto.Descripcion = obj.Descripcion;
 
                             result.Objects.Add(producto);
                         }
@@ -80,8 +92,28 @@ namespace BL
                 using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
                 {
                     var query = (from productoDL in context.Productos
+                                 join proveedor in context.Proveedors on productoDL.IdProveedor equals proveedor.IdProveedor
+                                 join departamento in context.Departamentos on productoDL.IdDepartamento equals departamento.IdDepartamento
+                                 join area in context.Areas on departamento.IdArea equals area.IdArea
                                  where productoDL.IdProducto == IdUsuario
-                                 select productoDL).FirstOrDefault();
+                                 select new
+                                 {
+                                     IdProducto = productoDL.IdProducto,
+                                     Nombre = productoDL.Nombre,
+                                     Descripcion = productoDL.Descripcion,
+                                     FechaIngreso = productoDL.FechaIngreso,
+                                     PrecioUnitario = productoDL.PrecioUnitario,
+                                     CodigoBarras = productoDL.CodigoBarras,
+                                     Imagen = productoDL.Imagen,
+                                     Modelo = productoDL.Modelo,
+                                     IdMarca = productoDL.IdMarca,
+                                     IdProveedor = productoDL.IdProveedor,
+                                     ProveedorNombre = proveedor.Nombre,
+                                     IdDepartamento = productoDL.IdDepartamento,
+                                     IdArea = departamento.IdArea,
+                                     IdUsuarioModificacion = productoDL.IdUsuarioModificacion,
+
+                                 }).FirstOrDefault();
                     if (query != null)
                     {
                         ML.Producto producto = new ML.Producto();
@@ -98,10 +130,11 @@ namespace BL
                         producto.Marca.IdMarca = query.IdMarca.Value;
                         producto.Proveedor = new ML.Proveedor();
                         producto.Proveedor.IdProveedor = query.IdProveedor.Value;
+                        producto.Proveedor.Nombre = query.ProveedorNombre;
                         producto.Departamento = new ML.Departamento();
                         producto.Departamento.IdDepartamento = query.IdDepartamento.Value;
-                        //producto.Departamento.Area = new ML.Area();
-                        //producto.Departamento.Area.IdArea = obj.IdArea;
+                        producto.Departamento.Area = new ML.Area();
+                        producto.Departamento.Area.IdArea = query.IdArea.Value;
                         producto.Usuario = new ML.Usuario();
                         producto.Usuario.IdUsuario = query.IdUsuarioModificacion.Value;
 

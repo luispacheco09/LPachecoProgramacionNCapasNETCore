@@ -56,12 +56,12 @@ namespace PL.Controllers
             //drop down list departamento
             ML.Result resultDepartamento = BL.Departamento.GetAll();
             producto.Departamento = new ML.Departamento();
-            producto.Departamento.Departamentos = resultDepartamento.Objects;//temporalDepartamento
+            //producto.Departamento.Departamentos = resultDepartamento.Objects;//temporalDepartamento
 
             ////drop down list area
-            //ML.Result resultArea = BL.Area.GetAll();
-            //producto.Departamento.Area = new ML.Area();
-            //producto.Departamento.Area.Areas = resultArea.Objects;
+            ML.Result resultArea = BL.Area.GetAll();
+            producto.Departamento.Area = new ML.Area();
+            producto.Departamento.Area.Areas = resultArea.Objects;
 
 
 
@@ -88,13 +88,13 @@ namespace PL.Controllers
                 producto.Departamento.IdDepartamento = ((ML.Producto)result.Object).Departamento.IdDepartamento;
 
                 //Trae el departamento correcto
-                //producto.Departamento.Departamentos = resultDepartamento.Objects;//temporalDepartamento
+                producto.Departamento.Departamentos = resultDepartamento.Objects;//temporalDepartamento
 
                 //se inicializa arriba area
-                //int IdArea = producto.Departamento.Area.IdArea = ((ML.Producto)result.Object).Departamento.Area.IdArea;//temporalArea
-                //producto.Departamento.Area.Areas = resultArea.Objects;
-                //ML.Result resultIdArea = BL.Departamento.GetByIdArea(IdArea);
-                //producto.Departamento.Departamentos = resultIdArea.Objects;
+                int IdArea = producto.Departamento.Area.IdArea = ((ML.Producto)result.Object).Departamento.Area.IdArea;//temporalArea
+                producto.Departamento.Area.Areas = resultArea.Objects;
+                ML.Result resultIdArea = BL.Departamento.GetByIdArea(IdArea);
+                producto.Departamento.Departamentos = resultIdArea.Objects;
 
                 return View(producto);
 
@@ -102,7 +102,7 @@ namespace PL.Controllers
         }
 
         [HttpPost] //Recibe datos del formulario
-        public ActionResult Form(ML.Producto producto, IFormFile Imagen)
+        public ActionResult Form(ML.Producto producto, IFormFile? Imagen)
         //public ActionResult Form(ML.Producto producto)
         {
 
@@ -159,7 +159,7 @@ namespace PL.Controllers
             producto.Departamento.Departamentos = resultDepartamentor.Objects;
 
             ////drop down list departamento
-            //producto.Departamento = new ML.Departamento();
+            producto.Departamento = new ML.Departamento();
 
             //drop down list area
             ML.Result resultArea = BL.Area.GetAll();
@@ -195,6 +195,14 @@ namespace PL.Controllers
             fileStream.Read(imageBytes, 0, (int)fileStream.Length);
 
             return imageBytes;
+        }
+        //DDL
+        public JsonResult GetDepartamentosList(int IdArea)
+        {
+            //BL- > Departamentos de determinada Area 
+            ML.Result resultDepartamentos = BL.Departamento.GetByIdArea(IdArea);
+            //crear un nuevo stored GrupoGetByIdPlantel -> DepartamentoGetByIdArea
+            return Json(resultDepartamentos.Objects);
         }
     }
 }
