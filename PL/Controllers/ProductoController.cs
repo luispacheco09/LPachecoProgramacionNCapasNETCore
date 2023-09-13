@@ -102,13 +102,13 @@ namespace PL.Controllers
         }
 
         [HttpPost] //Recibe datos del formulario
-        public ActionResult Form(ML.Producto producto, IFormFile? Imagen)
+        public ActionResult Form(ML.Producto producto, IFormFile? imgProducto)
         //public ActionResult Form(ML.Producto producto)
         {
 
-            if (Imagen != null)//Aplica para ambos add y update
+            if (imgProducto != null)//Aplica para ambos add y update
             {
-                producto.Imagen = ConvertToBytes(Imagen);//Se convierte la imagen a bytes
+                producto.Imagen = ConvertToBytes(imgProducto);//Se convierte la imagen a bytes
 
             }
             if (ModelState.IsValid)

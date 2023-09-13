@@ -73,7 +73,7 @@ namespace BL
                     }
                     else
                     {
-                        result.Correct = true;
+                        result.Correct = false;
                         result.ErrorMessage = "No se encontraron datos de Productos"; ;
                     }
                 }
@@ -187,25 +187,35 @@ namespace BL
                     if (RowsAffected > 0)
                     {
                         ML.Result resultSucursal = BL.Sucursal.GetAll();
-                        
 
-                        foreach (var item in resultSucursal.Objects.ToList())
+                        if (resultSucursal.Correct)
                         {
-                            DL.SucursalProducto sucursalProducto = new DL.SucursalProducto();
-                            sucursalProducto.IdProducto = DLProducto.IdProducto;
-                            //sucursalProducto.IdSucursal = item.ID
-                            context.SucursalProductos.Add(sucursalProducto);
-                        }
-                        int RowsAffectedSucursalP = context.SaveChanges();
+                            foreach (var item in resultSucursal.Objects.ToList())
+                            {
+                                if(item is ML.Sucursal sucursal)
+                                {
+                                    DL.SucursalProducto sucursalProducto = new DL.SucursalProducto();
+                                    sucursalProducto.IdProducto = DLProducto.IdProducto;
+                                    sucursalProducto.IdSucursal = sucursal.IdSucursal;
+                                    sucursalProducto.Stock = 0;
+                                    context.SucursalProductos.Add(sucursalProducto);
+                                }
+                            }
+                            int RowsAffectedSucursalP = context.SaveChanges();
 
-                        if (RowsAffectedSucursalP > 0)
-                        {
-                            result.Correct = true;
+                            if (RowsAffectedSucursalP > 0)
+                            {
+                                result.Correct = true;
+                            }
+                            else
+                            {
+                                result.Correct = false;
+                                result.ErrorMessage = "No se pudo registrar el producto en la sucursal";
+                            }
                         }
                         else
                         {
-                            result.Correct = false;
-                            result.ErrorMessage = "No se pudo registrar el producto en la sucursal";
+                            result.Correct = true;
                         }
                     }
                     else
@@ -299,9 +309,11 @@ namespace BL
                         result.ErrorMessage = "No se puede eliminar el producto ya que esta asociado a una o más sucursales.";
                     }
                 }
-                result.Correct = false;
-                result.ErrorMessage = "No se pudieron guardar los cambios el producto";
-
+                else
+                {
+                    result.Correct = false;
+                    result.ErrorMessage = "No se pudieron guardar los cambios el producto";
+                }
             }
             catch (Exception ex)
             {

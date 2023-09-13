@@ -33,7 +33,7 @@
         @Html.ActionLink("+", "Form", "Producto", htmlAttributes: new { @class = "btn btn-success" })
     </div>
 
-    @if (Model != null)
+    @if (Model.Productos.Count > 0)
     {
         <div class="row">
             @* <table id="example" class="table table-hover table-striped table-bordered table-responsive" id="table_sucursales"> *@
@@ -81,6 +81,16 @@
                 </tbody>
             </table>
         </div>
+    }
+    else
+    {
+        <div class="row m-5">
+            <div class="col">
+                <div class="alert alert-danger" role="alert">No existen registros.</div>
+
+            </div>
+        </div>
+
     }
 
 </div>
