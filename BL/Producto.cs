@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -165,6 +166,7 @@ namespace BL
             {
                 using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
                 {
+
                     DL.Producto DLProducto = new DL.Producto();
 
                     DLProducto.Nombre = producto.Nombre;
@@ -184,7 +186,27 @@ namespace BL
 
                     if (RowsAffected > 0)
                     {
-                        result.Correct = true;
+                        ML.Result resultSucursal = BL.Sucursal.GetAll();
+                        
+
+                        foreach (var item in resultSucursal.Objects.ToList())
+                        {
+                            DL.SucursalProducto sucursalProducto = new DL.SucursalProducto();
+                            sucursalProducto.IdProducto = DLProducto.IdProducto;
+                            //sucursalProducto.IdSucursal = item.ID
+                            context.SucursalProductos.Add(sucursalProducto);
+                        }
+                        int RowsAffectedSucursalP = context.SaveChanges();
+
+                        if (RowsAffectedSucursalP > 0)
+                        {
+                            result.Correct = true;
+                        }
+                        else
+                        {
+                            result.Correct = false;
+                            result.ErrorMessage = "No se pudo registrar el producto en la sucursal";
+                        }
                     }
                     else
                     {
@@ -265,6 +287,20 @@ namespace BL
                         result.ErrorMessage = "No se pudo eliminar el producto";
                     }
                 }
+
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException DbUpdateEx)
+            {
+                if (DbUpdateEx.InnerException is SqlException sqlEx)
+                {
+                    if (sqlEx.Number == 547)//Error especifico para violacion de llave foranea
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se puede eliminar el producto ya que esta asociado a una o más sucursales.";
+                    }
+                }
+                result.Correct = false;
+                result.ErrorMessage = "No se pudieron guardar los cambios el producto";
 
             }
             catch (Exception ex)

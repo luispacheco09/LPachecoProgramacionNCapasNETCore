@@ -85,8 +85,8 @@ namespace PL.Controllers
             venta.SucursalProducto = new ML.SucursalProducto();
             venta.SucursalProducto.IdSucursalProducto = IdSucursalProducto;
             venta.Cantidad = 1;
+
             ML.Result resultProductos = BL.SucursalProducto.GetProductbySucProduct(IdSucursalProducto);
-            //venta = (ML.VentaProducto)resultProductos.Object;
             venta.SucursalProducto = (ML.SucursalProducto)resultProductos.Object;
             listaProductos.Add(venta);
 
@@ -148,8 +148,6 @@ namespace PL.Controllers
                 if (agregar && productoExistente.Cantidad < productoExistente.SucursalProducto.Stock)
                 {
                     productoExistente.Cantidad++;
-                    //ViewBag.Mensaje = "Se ha agregado correctamente el producto";
-
                 }
                 else if (!agregar && productoExistente.Cantidad > 0)
                 {
@@ -159,20 +157,14 @@ namespace PL.Controllers
                     {
                         return RedirectToAction("RemoveFromCart", "Venta", new { IdSucursalProducto = IdSucursalProducto });
                     }
-                    //ViewBag.Mensaje = "Se ha quitado correctamente el producto";
-
                 }
 
                 HttpContext.Session.SetString("Session", JsonSerializer.Serialize(listaProductos));
 
                 return RedirectToAction("Cart", "Venta");
-                //return PartialView("Modal");
-
             }
             return RedirectToAction("Cart", "Venta");
-
             //return PartialView("Modal");
-
         }
         //public IActionResult AumentarCantidad(int IdSucursalProducto, bool agregar)
         //{

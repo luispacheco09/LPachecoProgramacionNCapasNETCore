@@ -1,14 +1,10 @@
-﻿@*@model ML.VentaProducto*@
-@model List<ML.VentaProducto>
+﻿@model List<ML.VentaProducto>
 
 @{
     ViewData["Title"] = "Cart";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@{
-    decimal? Total = 0;
-}
 <div id="Cart-container">
     @if (Model.Count > 0)
     {
@@ -28,8 +24,6 @@
                                         <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
                                             <!-- Image -->
                                             <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
-                                                @*  <img src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Vertical/12a.webp"
-                                        class="w-100" alt="Blue Jeans Jacket" /> *@
                                                 @if (ventaProducto.SucursalProducto.Producto.Imagen != null)
                                                 {
                                                     <img src="data:image/jpg;base64,@Convert.ToBase64String(ventaProducto.SucursalProducto.Producto.Imagen)" class="w-100" />
@@ -52,45 +46,21 @@
                                             <p>Cantidad: @ventaProducto.Cantidad</p>
                                             <p>Precio Unitario: @ventaProducto.SucursalProducto.Producto.PrecioUnitario</p>
                                             <p>Modelo: @ventaProducto.SucursalProducto.Producto.Modelo</p>
-                                            @* JS *@
-                                            @* <a class="btn btn-danger flex-fill ms-1 remove-btn" id="removeItem" data-idsucursal="@ventaProducto.SucursalProducto.IdSucursalProducto">Eliminar articulo</a> *@
-                                            @* Sin JS*@
-                                            <a class="btn btn-danger flex-fill ms-1" asp-controller="Venta" asp-action="RemoveFromCart" asp-route-IdSucursalProducto="@ventaProducto.SucursalProducto.IdSucursalProducto">Eliminar </a>
+                                            <a class="btn btn-outline-danger flex-fill ms-1" href="@Url.Action("RemoveFromCart", "Venta", new { IdSucursalProducto = ventaProducto.SucursalProducto.IdSucursalProducto})" onclick="return confirm('Estas seguro que deseas eliminar el producto del carrito?');"><img src="/Images/remove.png"></a>
                                             <!-- Data -->
                                         </div>
 
                                         <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
                                             <!-- Quantity -->
                                             <div class="d-flex mb-4" style="max-width: 300px">
-                                                @* <button class="btn btn-primary px-3 me-2"
-                                        onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                        <i class="fas fa-minus"></i>
-                                        </button> *@
-
-                                                <a class="btn btn-outline-light glyphicon" href="@Url.Action("AumentarCantidad", "Venta", new { IdSucursalProducto = ventaProducto.SucursalProducto.IdSucursalProducto, agregar = false })"><img src="/Images/Menos.png" height="20px" width="20px"></a>
-
-                                              @*   <button class="btn btn-outline-light px-3 me-2"
-                                                        onclick="decrementar(@ventaProducto.SucursalProducto.IdSucursalProducto)">
-
-                                                    <img src="/Images/Menos.png" height="20px" width="20px">
-                                                </button> *@
+                                                <a class="btn btn-outline-light btn-decrementar" data-id="@ventaProducto.SucursalProducto.IdSucursalProducto" href="@Url.Action("AumentarCantidad", "Venta", new { IdSucursalProducto = ventaProducto.SucursalProducto.IdSucursalProducto, agregar = false })"><img src="/Images/Menos.png" height="20px" width="20px"></a>
 
                                                 <div class="form-outline text-center">
-                                                    <input id="form1-@ventaProducto.SucursalProducto.IdSucursalProducto" min="0" name="quantity" value="@ventaProducto.Cantidad" class="form-control" readonly="readonly" />
+                                                    <input id="form1-@ventaProducto.SucursalProducto.IdSucursalProducto" min="0" name="quantity" value="@ventaProducto.Cantidad" class="form-control text-center" readonly="readonly" />
                                                     <label class="form-label text-center" for="form1">Cantidad</label>
                                                 </div>
 
-                                                @* <button class="btn btn-outline-light px-3"
-                                                        onclick="incrementar(@ventaProducto.SucursalProducto.IdSucursalProducto)">
-                                                    <img src="/Images/Mas.png" height="20px" width="20px">
-
-                                                </button> *@
-                                                <a class="btn btn-outline-light glyphicon " href="@Url.Action("AumentarCantidad", "Venta", new { IdSucursalProducto = ventaProducto.SucursalProducto.IdSucursalProducto, agregar = true })"><img src="/Images/Mas.png" height="20px" width="20px"></a>
-                                                @*
-                                        <button class="btn btn-primary px-3 ms-2"
-                                        onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                        <i class="fas fa-plus"></i>
-                                        </button> *@
+                                                <a class="btn btn-outline-light btn-incrementar" data-id="@ventaProducto.SucursalProducto.IdSucursalProducto" data-stock="@ventaProducto.SucursalProducto.Stock" data-action="@Url.Action("AumentarCantidad", "Venta", new { IdSucursalProducto = ventaProducto.SucursalProducto.IdSucursalProducto, agregar = true })"><img src="/Images/Mas.png" height="20px" width="20px"></a>
                                             </div>
                                             <!-- Quantity -->
                                             <!-- Price -->
@@ -98,9 +68,6 @@
                                                 <strong>Subtotal: @ventaProducto.total</strong>
                                             </p>
                                             <!-- Price -->
-                                            @{
-                                                Total += (ventaProducto.Cantidad * ventaProducto.SucursalProducto.Producto.PrecioUnitario);
-                                            }
                                         </div>
                                     </div>
                                     <!-- Single item -->
@@ -117,18 +84,10 @@
                         <div class="card mb-4 mb-lg-0">
                             <div class="card-body">
                                 <p><strong>We accept</strong></p>
-                                 <img class="me-2" width="45px"
-                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
-                            alt="Visa" />
-                            <img class="me-2" width="45px"
-                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
-                            alt="American Express" />
-                            <img class="me-2" width="45px"
-                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
-                            alt="Mastercard" />
-                            <img class="me-2" width="45px"
-                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce/includes/gateways/paypal/assets/images/paypal.webp"
-                            alt="PayPal acceptance mark" />
+                                <img class="me-2" width="45px" src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg" alt="Visa" />
+                                <img class="me-2" width="45px" src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg" alt="American Express" />
+                                <img class="me-2" width="45px" src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg" alt="Mastercard" />
+                                <img class="me-2" width="45px" src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce/includes/gateways/paypal/assets/images/paypal.webp" alt="PayPal acceptance mark" />
                             </div>
                         </div>
                     </div>
@@ -138,8 +97,8 @@
                                 <h5 class="mb-0">Resumen de compra</h5>
                             </div>
                             <div class="card-body">
-                                
-                                    <ul class="list-group list-group-flush">
+
+                                <ul class="list-group list-group-flush">
                                     @foreach (ML.VentaProducto ventaProducto in Model)
                                     {
                                         <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
@@ -148,23 +107,17 @@
                                         </li>
                                     }
 
-                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                            Shipping
-                                            <span>Gratis</span>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
-                                            <div>
-                                                <strong>Cantidad total</strong>
-                                              @*   <strong>
-                                                    <p class="mb-0">(including VAT)</p>
-                                                </strong> *@
-                                            </div>
-                                            @* <span><strong>$@Total</strong></span> *@
-                                            <span><strong>$@ViewBag.Total</strong></span>
-                                        </li>
-                                    </ul>
-
-
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        Shipping
+                                        <span>Gratis</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                                        <div>
+                                            <strong>Cantidad total</strong>
+                                        </div>
+                                        <span><strong>$@ViewBag.Total</strong></span>
+                                    </li>
+                                </ul>
 
                                 <a class="btn btn-primary btn-lg btn-block  flex-fill" asp-action="CheckOut" asp-controller="Venta">Pagar</a>
 
@@ -174,16 +127,6 @@
                 </div>
             </div>
         </section>
-
-        @* <div id="alert-message" class="alert alert-dismissible fade show" role="alert" style="display: none;">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-    </button>
-    <strong>¡Mensaje!</strong> <span id="alert-text"></span>
-    </div> *@
-
-
-
     }
     else
     {
@@ -205,119 +148,38 @@
 
 <script type="text/javascript">
 
-    @* $(document).ready(function () {
-        $('.remove-btn').click(function (e) {
-        e.preventDefault();
-        var btnR = $(this);
-        var idSucursalP = btnR.data('idsucursal'); *@
-    @* var idSucursalP = $(this).data('idsucursal'); *@
-
-    @*  $.ajax({
-        type: 'POST',
-        url: "@Url.Action("RemoveFromCart", "Venta")",
-        data: { IdSucursalProducto: idSucursalP },
-        success: function () {
-
-        },
-        error: function () {
-        alert('error a traer los datos');
-
-        }
-        });
-        });
-        }); *@
-
-
-        function incrementar(idSucursalProducto) {
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("AumentarCantidad", "Venta")",
-                data: { IdSucursalProducto: idSucursalProducto, agregar: true },
-                success: function () {
-                   @*  var elementoInput = $('#form1-' + idSucursalProducto);
-                    var ValorActual = parseInt(elementoInput.val());
-                    elementoInput.val(ValorActual + 1); *@
-                },
-                error: function () {
-                    alert('error al incrementar');
-                }
-            });
-        }
-
-    function decrementar(idSucursalProducto) {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AumentarCantidad", "Venta")",
-            data: { IdSucursalProducto: idSucursalProducto, agregar: false },
-            success: function () {
-              @*   var elementoInput = $('#form1-' + idSucursalProducto);
-                var ValorActual = parseInt(elementoInput.val());
-                elementoInput.val(ValorActual - 1); *@
-            },
-            error: function () {
-                alert('error al incrementar');
-            }
-        });
-    }
-
-    @* alerta *@
-        $(document).ready(function () {
-            var mensaje = "@ViewBag.Mensaje";
-            if (mensaje) {
-
-                $("#mensajeAlert").text(mensaje).addClass("show");
-                setTimeout(function () {
-                    $("#mensajeAlert").removeClass("show");
-                }, 5000);
-            }
-        });
-
-</script>
-
-<script>
-
-</script>
-@* 
-            function incrementar(idSucursalProducto) {
-    $.ajax({
-        type: 'POST',
-        url: "@Url.Action("AumentarCantidad", "Venta")",
-        data: { IdSucursalProducto: idSucursalProducto, agregar: true },
-        success: function () {
-            // Muestra el modal cuando la solicitud AJAX sea exitosa
-            mostrarModal("Producto agregado al carrito");
-        },
-        error: function () {
-            alert('Error al incrementar');
-        }
-    });
-}
-
-function decrementar(idSucursalProducto) {
-    $.ajax({
-        type: 'POST',
-        url: "@Url.Action("AumentarCantidad", "Venta")",
-        data: { IdSucursalProducto: idSucursalProducto, agregar: false },
-        success: function () {
-            // Muestra el modal cuando la solicitud AJAX sea exitosa
-            mostrarModal("Producto quitado del carrito");
-        },
-        error: function () {
-            alert('Error al decrementar');
-        }
-    });
-}
-
-function mostrarModal(mensaje) {
     $(document).ready(function () {
-        bootbox.dialog({
-            message: '<div class="text-center"><i class="fa fa-check fa-3x text-success"></i><p>' + mensaje + '</p></div>',
-            closeButton: false
+        $('.btn-incrementar').click(function (e) {
+            e.preventDefault();
+            var idSucursalProduct = $(this).data('id');
+            var cantidadActual = parseInt($('#form1-' + idSucursalProduct).val());
+            var stock = parseInt($(this).data('stock'));
+            var accion = $(this).data('action');
+
+            if (cantidadActual < stock) {
+                window.location.href = accion;
+            }
+            else {
+                alert('No puedes agregar más a tu carrito. Ya has alcanzado el maximo disponible en stock de este producto');
+            }
         });
 
-        setTimeout(function () {
-            $('.bootbox').modal('hide');
-        }, 2000); // Cierra el modal automáticamente después de 2 segundos (puedes ajustar el tiempo)
+        $('.btn-decrementar').click(function (e) {
+            e.preventDefault();
+            var idSucursalProduct = $(this).data('id');
+            var cantidadActual = parseInt($('#form1-' + idSucursalProduct).val());
+         @* var accion = $(this).data('action'); *@
+
+            if (cantidadActual > 1) {
+                @* dos formas para redireccionar *@
+                @* window.location.href = accion; *@
+                window.location.href = $(this).attr('href');
+            }
+            else {
+                if (confirm('Estas seguro que deseas eliminar el producto del carrito?')) {
+                    window.location.href = $(this).attr('href');
+                }
+            }
+        });
     });
-}
- *@
+</script>

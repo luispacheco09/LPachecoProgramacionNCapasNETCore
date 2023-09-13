@@ -1,5 +1,8 @@
 ﻿@model ML.SucursalProducto
+<!-- Incluye Bootstrap JS y CSS -->
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
 @if (Model.SucuralesProductos != null)
 {
     <div class="row m-5">
@@ -20,12 +23,12 @@
                     <tr>
                         @*<td style="text-align: center; vertical-align: middle;"><a class="btn btn-warning glyphicon" href="@Url.Action("Form", "Producto", new { IdProducto = producto.Producto.IdProducto })"><i class="bi bi-pencil-square" style="color: ivory"></i></a></td>*@
                         <td style="text-align: center; vertical-align: middle;">
-                            <a class="btn btn-outline-warning stock-btn" href="#" id="EditarStock" data-idstock="@producto.IdSucursalProducto"><img src="/Images/editar.png"></a>
+                            <a class="btn btn-outline-warning btn-EditarStock" href="#" id="EditarStock" data-idsucursalproducto="@producto.IdSucursalProducto"><img src="/Images/editar.png"></a>
                         </td>
                         <td style="display :none;">@producto.Producto.IdProducto </td>
                         <td>@producto.Sucursal.Nombre</td>
                         <td>@producto.Producto.Nombre </td>
-                        <td id="stockValor">@producto.Stock </td>
+                        <td id="stockValor-@producto.IdSucursalProducto">@producto.Stock </td>
 
 
                         <td style="text-align: center; vertical-align: middle;"><a class="btn btn-outline-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "SucursalProducto", new { IdSucursalProducto = producto.IdSucursalProducto})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><img src="/Images/remove.png">   </a></td>
@@ -69,35 +72,33 @@ else
 <!-- Incluye jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Incluye Bootstrap JS y CSS -->
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
 
 
 <script>
     $(document).ready(function () {
 
-        $('.stock-btn').click(function (e) {
+        $('.btn-EditarStock').click(function (e) {
             e.preventDefault();
-            var btnM = $(this);
-            var idStock = btnM.data('idstock');
-
+                // para evitar la acumulación de click
+            $('#guardarStock').off('click');
+            var idSucursalProduct = $(this).data('idsucursalproducto');
+         
             $('#StockModal').modal('show');  /*abrir*/
             $('#guardarStock').click(function () {
                 var txtStock = $('#txtStock').val();
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Action("UpdateStock","SucursalProducto")',
-                    data: { idStock: idStock, txtStock: txtStock },
+                    data: { idStock: idSucursalProduct, txtStock: txtStock },
                     success: function (result) {
                         if (result.success) {
 
                             $('#StockModal').modal('hide');
                             alert('Stock actualizado Correctamente: '+ result.message);
-                            var ns = result.nuevoValor;
+                            // var ns = result.nuevoValor;
                             /*Pendiente */
-                            $('#stockValor').text(result.nuevoValor);
+                            $('#stockValor-' + idSucursalProduct).text(result.nuevoValor);
                             $('#txtStock').val('');
                         }
                         else {

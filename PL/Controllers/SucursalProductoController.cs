@@ -43,13 +43,15 @@ namespace PL.Controllers
 
             //return PartialView("Modal");
         }
-        public ActionResult Delete(int IdSucursalP)
+        public ActionResult Delete(int IdSucursalProducto)
         {
-            ML.Result result = BL.SucursalProducto.Delete(IdSucursalP);//Trae la informacion directa desde el BL
+            ML.Result result = BL.SucursalProducto.Delete(IdSucursalProducto);//Trae la informacion directa desde el BL
 
             if (result.Correct)
             {
                 ViewBag.Mensaje = "Se ha eliminado correctamente el producto de la sucursal";
+                ViewBag.SucProduct = IdSucursalProducto;
+
             }
             else
             {
