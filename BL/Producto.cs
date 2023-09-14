@@ -1,6 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -282,13 +284,16 @@ namespace BL
             {
                 using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
                 {
-                    var query = (from productoDL in context.Productos
-                                 where productoDL.IdProducto == IdProducto
-                                 select productoDL).First();
-                    if (query != null)
+                    //var query = (from productoDL in context.Productos
+                    //             where productoDL.IdProducto == IdProducto
+                    //             select productoDL).First();
+                     var query = context.Database.ExecuteSql($"ProductoDeleteCascade @IdProducto={IdProducto}");
+                    
+
+                    if (query >0)
                     {
-                        context.Productos.Remove(query);
-                        context.SaveChanges();
+                        //context.Productos.Remove(query);
+                        //context.SaveChanges();
                         result.Correct = true;
                     }
                     else
@@ -322,5 +327,45 @@ namespace BL
             }
             return result;
         }
+
+        //public static ML.Result DeleteSP(int IdProduco)
+        //{
+        //    ML.Result result = new ML.Result();
+        //    try
+        //    {
+        //        using (SqlConnection context = new SqlConnection(DL.Conexion.GetConnectionString()))
+        //        {
+        //            string query = "UsuarioDelete";
+
+        //            using (SqlCommand cmd = new SqlCommand(query, context))
+        //            {
+        //                cmd.CommandType = CommandType.StoredProcedure;
+        //                cmd.Parameters.AddWithValue("@IdUsuario", usuario.IdUsuario);
+        //                cmd.Connection.Open();
+
+        //                int RowsAffected = cmd.ExecuteNonQuery();
+
+        //                if (RowsAffected > 0)
+        //                {
+        //                    result.Correct = true;
+        //                }
+        //                else
+        //                {
+        //                    result.Correct = false;
+        //                    result.ErrorMessage = "No se pudo realizar la actulización";
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result.Correct = false;
+        //        result.ErrorMessage = ex.Message;
+
+        //    }
+
+        //    return result;
+        //}
+
     }
 }

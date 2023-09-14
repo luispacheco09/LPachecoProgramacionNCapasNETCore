@@ -27,6 +27,7 @@ namespace BL
                                              IdProducto = sucursalPDL.IdProducto,
                                              Stock = sucursalPDL.Stock,
                                              ProductoNombre = producto.Nombre,
+                                             Imagen = producto.Imagen,
                                              SucursalNombre = sucursal.Nombre
                                          });
 
@@ -45,6 +46,7 @@ namespace BL
                             sucursalp.Producto = new ML.Producto();
                             sucursalp.Producto.IdProducto = obj.IdProducto.Value;
                             sucursalp.Producto.Nombre = obj.ProductoNombre;
+                            sucursalp.Producto.Imagen = obj.Imagen;
                            
 
                             result.Objects.Add(sucursalp);
@@ -77,7 +79,7 @@ namespace BL
                     var listaSucursal = (from sucursalPDL in context.SucursalProductos
                                          join sucursal in context.Sucursals on sucursalPDL.IdSucursal equals sucursal.IdSucursal
                                          join producto in context.Productos on sucursalPDL.IdProducto equals producto.IdProducto
-                                         where sucursalPDL.IdSucursal == 2 && producto.IdDepartamento == IdDepartamento 
+                                         where sucursalPDL.IdSucursal == 3 && producto.IdDepartamento == IdDepartamento 
                                          select new
                                          {
                                              IdSucursalProducto = sucursalPDL.IdSucursalProducto,

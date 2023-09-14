@@ -33,65 +33,69 @@
         @Html.ActionLink("+", "Form", "Producto", htmlAttributes: new { @class = "btn btn-success" })
     </div>
 
-    @if (Model.Productos.Count > 0)
+    @if (Model.Productos != null)
     {
-        <div class="row">
-            @* <table id="example" class="table table-hover table-striped table-bordered table-responsive" id="table_sucursales"> *@
-            <table id="example" class="table table-striped" style="width:100%">
+        @if (Model.Productos.Count > 0)
+        {
+            <div class="row">
+                @* <table id="example" class="table table-hover table-striped table-bordered table-responsive" id="table_sucursales"> *@
+                <table id="example" class="table table-striped" style="width:100%">
 
-                <thead>
-                    <tr class="table-secondary">
-                        <td>Editar</td>
-                        <td style="display :none;">id</td>
-                        <td>Nombre</td>
-                        <td>Codigo de barras</td>
-                        <td>Modelo</td>
-                        <td>Marca</td>
-                        <td>Proveedor</td>
-                        <td>Departamento</td>
-                        <td>Imagen</td>
-                        <td>Eliminar</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (ML.Producto producto in Model.Productos)
-                    {
-                        <tr>
-                            <td style="text-align: center; vertical-align: middle;"><a class="btn btn-outline-warning glyphicon" href="@Url.Action("Form", "Producto", new { IdProducto = producto.IdProducto })"><img src="/Images/editar.png"></a></td>
-                            <td style="display :none;">@producto.IdProducto </td>
-                            <td>@producto.Nombre </td>
-                            <td>@producto.CodigoBarras</td>
-                            <td>@producto.Modelo</td>
-                            <td>@producto.Marca.Nombre</td>
-                            <td>@producto.Proveedor.Nombre</td>
-                            <td>@producto.Departamento.Nombre</td>
-                            <td>
-                                @if (producto.Imagen != null)
-                                {
-                                    <img src="data:image/jpg;base64,@Convert.ToBase64String(producto.Imagen)" style="width:100px; height:100px" />
-                                }
-                                else
-                                {
-                                    <img id="imgUsuario" src="~/Images/producto.png" style="width:150px; height:150px" />
-                                }
-                            </td>
-                            <td style="text-align: center; vertical-align: middle;"><a class="btn btn-outline-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "Producto", new { IdProducto = producto.IdProducto})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><img src="/Images/remove.png"></a></td>
+                    <thead>
+                        <tr class="table-secondary">
+                            <td>Editar</td>
+                            <td style="display :none;">id</td>
+                            <td>Nombre</td>
+                            <td>Codigo de barras</td>
+                            <td>Modelo</td>
+                            <td>Marca</td>
+                            <td>Proveedor</td>
+                            <td>Departamento</td>
+                            <td>Imagen</td>
+                            <td>Eliminar</td>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-    else
-    {
-        <div class="row m-5">
-            <div class="col">
-                <div class="alert alert-danger" role="alert">No existen registros.</div>
-
+                    </thead>
+                    <tbody>
+                        @foreach (ML.Producto producto in Model.Productos)
+                        {
+                            <tr>
+                                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-outline-warning glyphicon" href="@Url.Action("Form", "Producto", new { IdProducto = producto.IdProducto })"><img src="/Images/editar.png"></a></td>
+                                <td style="display :none;">@producto.IdProducto </td>
+                                <td>@producto.Nombre </td>
+                                <td>@producto.CodigoBarras</td>
+                                <td>@producto.Modelo</td>
+                                <td>@producto.Marca.Nombre</td>
+                                <td>@producto.Proveedor.Nombre</td>
+                                <td>@producto.Departamento.Nombre</td>
+                                <td>
+                                    @if (producto.Imagen != null)
+                                    {
+                                        <img src="data:image/jpg;base64,@Convert.ToBase64String(producto.Imagen)" style="width:100px; height:100px" />
+                                    }
+                                    else
+                                    {
+                                        <img id="imgUsuario" src="~/Images/producto.png" style="width:150px; height:150px" />
+                                    }
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;"><a class="btn btn-outline-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "Producto", new { IdProducto = producto.IdProducto})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><img src="/Images/remove.png"></a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="row m-5">
+                <div class="col">
+                    <div class="alert alert-danger" role="alert">No existen registros. Da clic en + para agregar productos.</div>
 
+                </div>
+            </div>
+
+        }
     }
+   
 
 </div>
 

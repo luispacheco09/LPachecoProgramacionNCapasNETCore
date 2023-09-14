@@ -160,13 +160,13 @@ INSERT INTO [dbo].[Sucursal]
 GO
 
 -------------Trigger---------------------------
-CREATE TRIGGER SucursalProductoAdd
+Alter TRIGGER SucursalProductoAdd
 ON dbo.Sucursal
 AFTER INSERT
 AS
 BEGIN
-	Insert INTO SucursalProducto(Idproducto,IdSucursal)
-	Select (IdProducto),(inserted.IdSucursal)
+	Insert INTO SucursalProducto(Idproducto,IdSucursal, Stock)
+	Select (IdProducto),(inserted.IdSucursal),(0)
 	FROM Producto, inserted
 END
 
@@ -174,3 +174,120 @@ DROP TRIGGER SucursalProductoAdd
 
 SELECT *
 FROM SucursalProductoPrueba
+
+
+--Store procedure
+ GO
+
+ CREATE PROCEDURE ProductoDeleteCascade
+  @IdProducto INT
+ AS
+	BEGIN
+		DELETE SucursalProducto FROM Producto 
+		INNER JOIN SucursalProducto
+		ON Producto.IdProducto = SucursalProducto.IdProducto
+		WHERE Producto.IdProducto = @IdProducto
+
+	
+		DELETE FROM Producto
+		WHERE IdProducto = @IdProducto
+	END
+EXECUTE ProductoDeleteCascade 9
+
+ALTER TABLE SucursalProducto  WITH CHECK ADD  CONSTRAINT FK_SucursalP_IdProducto FOREIGN KEY(IdProducto)
+REFERENCES Producto (IdProducto)
+ON DELETE CASCADE
+GO
+ 
+ALTER TABLE SucursalProducto CHECK CONSTRAINT FK_SucursalP_IdProducto
+GO
+--inserts--
+
+--AREA
+INSERT INTO [dbo].[Area]
+           ([Nombre])
+     VALUES
+           ('Mascotas'),
+           ('Abarrotes'),
+		   ('Deportes')
+GO}
+--DEPARTAMENTO
+
+INSERT INTO [dbo].[Departamento]
+           ([Nombre]
+           ,[IdArea])
+     VALUES
+           ('Perros'
+           ,1),
+		   ('Gatos'
+           ,1),
+		   ('Jugos y Bebidas'
+           ,2),
+		   ('Galletas, Cereales y Barras'
+           ,2),
+		   ('Botanas y Snacks'
+           ,2),
+		   ('Camping'
+           ,3),
+		   ('Ciclismo'
+           ,3)
+GO
+--Marca
+INSERT INTO [dbo].[Marca]
+           ([Nombre])
+     VALUES
+	 
+		   ('Nupec'),
+           ('Dog Chow'),
+           ('Cat Chow'),
+           ('Minino'),
+
+           ('Gamesa'),
+           ('Sabritas'),
+           ('Coca-Cola'),
+           ('Nescafe'),
+           ('Manzanita Sol'),
+		   ('Jumex'),
+
+		   --Bicis
+           ('Specialized'),
+           ('Scott'),
+		   --Tiendas campar
+           ('Coleman'),
+           ('North Face')
+
+
+
+GO
+
+
+	
+--Proveedor
+
+INSERT INTO [dbo].[Proveedor]
+           ([Nombre]
+           ,[Direccion]
+           ,[Telefono]
+           ,[Celular]
+           ,[PaginaWeb])
+     VALUES
+           ('Proveedor 1'
+           ,'San Juan #320'
+           ,5529350954
+           ,5512096543
+           ,'www.proveedor-1.com'),
+		   ('Proveedor 2'
+           ,'San Juan #320'
+           ,5529350954
+           ,5512096543
+           ,'www.proveedor-2.com'),
+		   ('Proveedor 3'
+           ,'San Juan #320'
+           ,5529350954
+           ,5512096543
+           ,'www.proveedor-3.com'),
+		   ('Proveedor 4'
+           ,'San Juan #320'
+           ,5529350954
+           ,5512096543
+           ,'www.proveedor-4.com')
