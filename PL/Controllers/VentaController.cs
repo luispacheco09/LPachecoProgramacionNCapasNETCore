@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
+using System.Net.Mail;
+using System.Net;
 using System.Text.Json;
+using System.IO;
 
 namespace PL.Controllers
 {
@@ -193,6 +196,7 @@ namespace PL.Controllers
         //}
         public IActionResult CheckOut()
         {
+            //se saca la lista de la sesion
             var cart = HttpContext.Session.GetString("Session");
             List<ML.VentaProducto> carritoList = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
 
@@ -215,7 +219,7 @@ namespace PL.Controllers
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = (long)(item.SucursalProducto.Producto.PrecioUnitario*100),
+                        UnitAmount = (long)(item.SucursalProducto.Producto.PrecioUnitario * 100),
                         Currency = "mxn",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
@@ -263,18 +267,93 @@ namespace PL.Controllers
                     }
 
                     // Limpia la sesión después de restar el stock
-                    HttpContext.Session.Remove("Session");
+                    //HttpContext.Session.Remove("Session");
                 }
 
                 var transaction = session.PaymentIntentId.ToString();
+                /**/
+                return RedirectToAction("Success", "Venta");
 
-                return View("Success");
+
+                //return View("Success");
             }
 
             return View("Failed");
         }
+        public IActionResult EnviarCerreo()
+        {
+            return View();
+        }
         public IActionResult Success()
         {
+            try
+            {
+                string user = _configuration.GetValue<string>("Email:UserName");
+                string password = _configuration.GetValue<string>("Email:PassWord");
+                string host = _configuration.GetValue<string>("Email:Host");
+                int port = int.Parse(_configuration.GetValue<string>("Email:Port"));
+                string from = _configuration.GetValue<string>("Email:UserName");
+
+                //string body = System.IO.File.ReadAllText("C:\\Users\\digis\\Documents\\Luis Angel Pacheco Cruz\\LPachecoProgramacionNCapasNETCore\\PL\\wwwroot\\mail.html");
+                //string body = System.IO.File.ReadAllText("~/mail.html");
+                string body = System.IO.File.ReadAllText("C:\\Users\\digis\\Documents\\Luis Angel Pacheco Cruz\\LPachecoProgramacionNCapasNETCore\\PL\\wwwroot\\mail.html");
+
+
+                string? nombre = "";
+                string? descripcion = "";
+                decimal? subtotal = 0;
+                decimal? precioTotal = 0;
+                int? cantidad = 0;
+
+                //se saca la lista de la sesion
+                var cart = HttpContext.Session.GetString("Session");
+                List<ML.VentaProducto> carritoList = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
+
+                foreach (var producto in carritoList)
+                {
+                    nombre = producto.SucursalProducto.Producto.Nombre;
+                    descripcion = producto.SucursalProducto.Producto.Descripcion;
+                    cantidad = producto.Cantidad;
+                    producto.total = producto.Cantidad * producto.SucursalProducto.Producto.PrecioUnitario;
+                    precioTotal += producto.total; // Agrega el subtotal al total
+                }
+
+                body = body.Replace("{{Nombre}}", nombre);
+                body = body.Replace("{{Descripcion}}", descripcion);
+                body = body.Replace("{{Cantidad}}", cantidad.ToString());
+                body = body.Replace("{{Subtotal}}", precioTotal.ToString());
+
+
+
+
+
+
+                MailMessage mail = new MailMessage();
+                mail.From = new MailAddress(from, "Confirmación de compra");
+                mail.To.Add("pacheco09angel@gmail.com");
+                mail.Subject = "Asunto gracias pro su compra";
+                mail.Body = body;
+                mail.IsBodyHtml = true;
+                mail.Priority = MailPriority.Normal;
+
+                /*SMTP*/
+                SmtpClient client = new SmtpClient();
+                client.Host = host;
+                client.Port = port;
+                client.EnableSsl = true;
+                client.UseDefaultCredentials = false;
+                NetworkCredential credentials = new NetworkCredential(user, password);
+                client.Credentials = credentials;
+                client.Send(mail);
+                ViewBag.Mensaje = "Se ha enviado un correo con la confimación de compra";
+
+                HttpContext.Session.Remove("Session");
+
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Mensaje = ex.Message;
+            }
             return View();
         }
         public IActionResult Failed()

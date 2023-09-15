@@ -1,10 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ML;
+using PL.Data;
+using System.Net.Mail;
+using System.Net;
+using Microsoft.Extensions.Hosting;
 
 namespace PL.Controllers
 {
     public class SucursalProductoController : Controller
     {
+        private readonly IConfiguration _configuration;
+        public SucursalProductoController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+
         public IActionResult Index()
         {
             //ML.Sucursal sucursal = new ML.Sucursal();
@@ -23,8 +34,22 @@ namespace PL.Controllers
         {
             ML.SucursalProducto sucursalp = new ML.SucursalProducto();
             ML.Result resultSucursal = BL.SucursalProducto.GetbySucursal(IdSucursal);
-            sucursalp.SucuralesProductos = resultSucursal.Objects;
-            return PartialView("ResulltadoSucursalP",sucursalp);
+            // configuración del app
+            bool mostrarProductosSinStock = _configuration.GetValue<bool>("AppSetings:MostrarProductosSinStock");
+            if (!mostrarProductosSinStock)
+            {
+                //sucursalp.SucuralesProductos = resultSucursal.Objects.Where(p => p.Stock >0);
+                sucursalp.SucuralesProductos = resultSucursal.Objects;
+
+
+            }
+            else
+            {
+                sucursalp.SucuralesProductos = resultSucursal.Objects;
+
+            }
+
+            return PartialView("ResulltadoSucursalP", sucursalp);
         }
         public IActionResult UpdateStock(int idStock, int txtStock)
         {
@@ -32,7 +57,7 @@ namespace PL.Controllers
             if (resultStock.Correct)
             {
                 //ViewBag.Mensaje = "Se ha actualizado correctamente el stock";
-                return Json(new {success = true, message = "Se ha actualizado correctamente el stock", nuevoValor = resultStock.Object });
+                return Json(new { success = true, message = "Se ha actualizado correctamente el stock", nuevoValor = resultStock.Object });
             }
             else
             {
