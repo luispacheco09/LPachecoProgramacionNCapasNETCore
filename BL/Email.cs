@@ -10,7 +10,7 @@ namespace BL
     public class Email
     {
 
-        public static ML.Result PopulateBody(string pathHTML, string userName, string password, string Nombre, string activateURL)
+        public static ML.Result PopulateBody(string pathHTML, string nombre, string descripcion, int? cantidad, decimal? subtotal)
         {
             ML.Result result = new ML.Result();
 
@@ -23,10 +23,11 @@ namespace BL
                     body = reader.ReadToEnd();
                 }
 
-                body = body.Replace("{UserName}", userName);
-                body = body.Replace("{Password}", password);
-                body = body.Replace("{Nombre}", Nombre);
-                body = body.Replace("{Url}", activateURL);
+                //body = body.Replace("{{ProductosInfo}}", productosInfo);
+                body = body.Replace("{{Nombre}}", nombre);
+                body = body.Replace("{{Descripcion}}", descripcion);
+                body = body.Replace("{{Cantidad}}", cantidad.ToString());
+                //body = body.Replace("{{Total}}", precioTotal.ToString());
 
                 result.Correct = true;
                 result.Object = body;
@@ -83,6 +84,5 @@ namespace BL
 
             return result;
         }
-
     }
 }

@@ -145,3 +145,60 @@ p {
     border: none;
     margin-top: 10px;
 }
+
+/* Estilos personalizados para el formulario */
+.custom-form {
+    background-color: rgba(255, 255, 255, 0.13);
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 30px 35px;
+    color: #ffffff;
+}
+
+    /* Estilos para las etiquetas dentro del formulario */
+    .custom-form label {
+        display: block;
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    /* Estilos para los campos de entrada dentro del formulario */
+    .custom-form input {
+        background-color: rgba(255, 255, 255, 0.07);
+        border-radius: 3px;
+        padding: 10px;
+        margin-top: 5px;
+        font-size: 14px;
+        font-weight: 300;
+        color: #ffffff;
+    }
+
+    /* Estilos para el botón dentro del formulario */
+    .custom-form button {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #ffffff;
+        color: #080710;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+        border: none;
+    }
+
+    /* Estilos para el contenedor de las columnas */
+    .custom-form .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* Espacio entre columnas */
+    }
+
+    /* Estilos para las columnas en pantallas medianas o más grandes */
+    .custom-form .col-md-6 {
+        flex: 0 0 calc(50% - 10px); /* Divide el formulario en dos columnas */
+        max-width: calc(50% - 10px); /* Ancho máximo de cada columna */
+    }
+
+/* Añadir estilos adicionales según sea necesario para otros elementos del formulario */

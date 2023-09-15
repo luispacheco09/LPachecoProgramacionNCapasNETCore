@@ -17,9 +17,23 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
     public virtual DbSet<Area> Areas { get; set; }
 
+    public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
+
+    public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
+
+    public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
+
+    public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
+
+    public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
+
+    public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
+
     public virtual DbSet<Departamento> Departamentos { get; set; }
 
     public virtual DbSet<Marca> Marcas { get; set; }
+
+    public virtual DbSet<MetodoPago> MetodoPagos { get; set; }
 
     public virtual DbSet<Producto> Productos { get; set; }
 
@@ -37,6 +51,10 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
     public virtual DbSet<UsuarioProducto> UsuarioProductos { get; set; }
 
+    public virtual DbSet<VentaProducto> VentaProductos { get; set; }
+
+    public virtual DbSet<Ventum> Venta { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=.; Database=LPachecoProgramacionNCapasNETCore; TrustServerCertificate=True; Trusted_Connection=True; User ID=sa; Password=pass@word1;");
@@ -52,6 +70,78 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<AspNetRole>(entity =>
+        {
+            entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
+                .IsUnique()
+                .HasFilter("([NormalizedName] IS NOT NULL)");
+
+            entity.Property(e => e.Name).HasMaxLength(256);
+            entity.Property(e => e.NormalizedName).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<AspNetRoleClaim>(entity =>
+        {
+            entity.HasIndex(e => e.RoleId, "IX_AspNetRoleClaims_RoleId");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.AspNetRoleClaims).HasForeignKey(d => d.RoleId);
+        });
+
+        modelBuilder.Entity<AspNetUser>(entity =>
+        {
+            entity.HasIndex(e => e.NormalizedEmail, "EmailIndex");
+
+            entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
+                .IsUnique()
+                .HasFilter("([NormalizedUserName] IS NOT NULL)");
+
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+            entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+            entity.Property(e => e.UserName).HasMaxLength(256);
+
+            entity.HasMany(d => d.Roles).WithMany(p => p.Users)
+                .UsingEntity<Dictionary<string, object>>(
+                    "AspNetUserRole",
+                    r => r.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
+                    l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
+                    j =>
+                    {
+                        j.HasKey("UserId", "RoleId");
+                        j.ToTable("AspNetUserRoles");
+                        j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
+                    });
+        });
+
+        modelBuilder.Entity<AspNetUserClaim>(entity =>
+        {
+            entity.HasIndex(e => e.UserId, "IX_AspNetUserClaims_UserId");
+
+            entity.HasOne(d => d.User).WithMany(p => p.AspNetUserClaims).HasForeignKey(d => d.UserId);
+        });
+
+        modelBuilder.Entity<AspNetUserLogin>(entity =>
+        {
+            entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+
+            entity.HasIndex(e => e.UserId, "IX_AspNetUserLogins_UserId");
+
+            entity.Property(e => e.LoginProvider).HasMaxLength(128);
+            entity.Property(e => e.ProviderKey).HasMaxLength(128);
+
+            entity.HasOne(d => d.User).WithMany(p => p.AspNetUserLogins).HasForeignKey(d => d.UserId);
+        });
+
+        modelBuilder.Entity<AspNetUserToken>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+
+            entity.Property(e => e.LoginProvider).HasMaxLength(128);
+            entity.Property(e => e.Name).HasMaxLength(128);
+
+            entity.HasOne(d => d.User).WithMany(p => p.AspNetUserTokens).HasForeignKey(d => d.UserId);
         });
 
         modelBuilder.Entity<Departamento>(entity =>
@@ -77,6 +167,17 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
 
             entity.Property(e => e.Nombre)
                 .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<MetodoPago>(entity =>
+        {
+            entity.HasKey(e => e.IdMetodoPago).HasName("PK__MetodoPa__6F49A9BEFEFA225E");
+
+            entity.ToTable("MetodoPago");
+
+            entity.Property(e => e.Metodo)
+                .HasMaxLength(50)
                 .IsUnicode(false);
         });
 
@@ -290,6 +391,38 @@ public partial class LpachecoProgramacionNcapasNetcoreContext : DbContext
             entity.HasOne(d => d.IdUsuarioModificacionNavigation).WithMany(p => p.UsuarioProductoIdUsuarioModificacionNavigations)
                 .HasForeignKey(d => d.IdUsuarioModificacion)
                 .HasConstraintName("FK__UsuarioPr__IdUsu__286302EC");
+        });
+
+        modelBuilder.Entity<VentaProducto>(entity =>
+        {
+            entity.HasKey(e => e.IdVentaProducto).HasName("PK__VentaPro__E4CB5099A451E788");
+
+            entity.ToTable("VentaProducto");
+
+            entity.HasOne(d => d.IdSucursalProductoNavigation).WithMany(p => p.VentaProductos)
+                .HasForeignKey(d => d.IdSucursalProducto)
+                .HasConstraintName("FK__VentaProd__IdSuc__5535A963");
+
+            entity.HasOne(d => d.IdVentaNavigation).WithMany(p => p.VentaProductos)
+                .HasForeignKey(d => d.IdVenta)
+                .HasConstraintName("FK__VentaProd__IdVen__5441852A");
+        });
+
+        modelBuilder.Entity<Ventum>(entity =>
+        {
+            entity.HasKey(e => e.IdVenta).HasName("PK__Venta__BC1240BDE8A97375");
+
+            entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.IdUser).HasMaxLength(450);
+            entity.Property(e => e.Total).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.IdMetodoPagoNavigation).WithMany(p => p.Venta)
+                .HasForeignKey(d => d.IdMetodoPago)
+                .HasConstraintName("FK__Venta__IdMetodoP__5165187F");
+
+            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.Venta)
+                .HasForeignKey(d => d.IdUser)
+                .HasConstraintName("FK__Venta__IdUser__5070F446");
         });
 
         OnModelCreatingPartial(modelBuilder);

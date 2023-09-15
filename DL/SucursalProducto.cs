@@ -16,4 +16,6 @@ public partial class SucursalProducto
     public virtual Producto? IdProductoNavigation { get; set; }
 
     public virtual Sucursal? IdSucursalNavigation { get; set; }
+
+    public virtual ICollection<VentaProducto> VentaProductos { get; set; } = new List<VentaProducto>();
 }

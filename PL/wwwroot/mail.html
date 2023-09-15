@@ -369,19 +369,22 @@
                                     <img src="images/prod-1.jpg" alt=""
                                          style="width: 100px; max-width: 600px; height: auto; margin-bottom: 20px; display: block;">
                                     <div class="text">
-                                        <h3>{{Nombre}}</h3>
+                                        <!--<h3>{{Nombre}}</h3>
                                         <span>{{Cantidad}}</span>
-                                        <p>{{Descripcion}}</p>
+                                        <p>{{Descripcion}}</p>-->
+                                        {{ProductosInfo}}
                                     </div>
                                 </div>
                             </td>
-                            <td valign="middle" width="20%" style="text-align:left; padding: 0 2.5em;">
+                            <!--<td valign="middle" width="20%" style="text-align:left; padding: 0 2.5em;">
                                 <span class="price" style="color: #000; font-size: 20px;">${{Subtotal}}</span>
-                            </td>
+                            </td>-->
                         </tr>
                         <tr>
                             <td valign="middle" style="text-align:right; padding: 1em 2.5em;">
-                                <p>${{Total}}</p>
+                                <!--<p>${{Total}}</p>-->
+                                <span class="price" style="color: #000; font-size: 20px;">Total: ${{Total}}</span>
+
                             </td>
                         </tr>
                         <tr>

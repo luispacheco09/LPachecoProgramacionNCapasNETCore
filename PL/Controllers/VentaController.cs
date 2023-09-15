@@ -5,12 +5,19 @@ using Stripe.Checkout;
 using System.Net.Mail;
 using System.Net;
 using System.Text.Json;
-using System.IO;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace PL.Controllers
 {
     public class VentaController : Controller
     {
+        private UserManager<IdentityUser> userManager;// sin esta estancia no se puede hacer un crud y apunta a la tabla rol (RolManager)
+        public VentaController(UserManager<IdentityUser> userMgr) //contructor de la clase la inicializa, si no se inicializa no se tiene acceso a la base de datos
+        {
+            userManager = userMgr;
+        }
+        /*Traer configuracion del appsettings*/
         private readonly IConfiguration _configuration;
 
         public VentaController(IConfiguration configuration)
@@ -246,11 +253,16 @@ namespace PL.Controllers
             Session session = service.Get(TempData["Session"].ToString());
             if (session.PaymentStatus == "paid")
             {
+                /*ID USUARIO ACTUAL*/
+                string userId = userManager.GetUserId(User);
+
+                //Extraer la sesion
                 var cart = HttpContext.Session.GetString("Session");
 
                 if (!string.IsNullOrEmpty(cart))
                 {
                     List<ML.VentaProducto> carrito = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
+                    decimal? precioTotal = 0;
 
                     foreach (var venta in carrito)
                     {
@@ -264,7 +276,13 @@ namespace PL.Controllers
                             // Actualizar el stock en la base de datos
                             BL.SucursalProducto.UpdateStock(venta.SucursalProducto.IdSucursalProducto, producto.Stock);
                         }
+
+                        venta.total = venta.Cantidad * venta.SucursalProducto.Producto.PrecioUnitario;
+                        precioTotal += venta.total; // Agrega el subtotal al total
                     }
+                    //@User.Identity?.Name
+                    BL.Venta.Add( userId,precioTotal);
+                    //return RedirectToAction("GetParametersEmail", "Email", new { listacarrito = carrito });
 
                     // Limpia la sesión después de restar el stock
                     //HttpContext.Session.Remove("Session");
@@ -280,7 +298,7 @@ namespace PL.Controllers
 
             return View("Failed");
         }
-        public IActionResult EnviarCerreo()
+        public IActionResult EnviarCorreo()
         {
             return View();
         }
@@ -294,8 +312,6 @@ namespace PL.Controllers
                 int port = int.Parse(_configuration.GetValue<string>("Email:Port"));
                 string from = _configuration.GetValue<string>("Email:UserName");
 
-                //string body = System.IO.File.ReadAllText("C:\\Users\\digis\\Documents\\Luis Angel Pacheco Cruz\\LPachecoProgramacionNCapasNETCore\\PL\\wwwroot\\mail.html");
-                //string body = System.IO.File.ReadAllText("~/mail.html");
                 string body = System.IO.File.ReadAllText("C:\\Users\\digis\\Documents\\Luis Angel Pacheco Cruz\\LPachecoProgramacionNCapasNETCore\\PL\\wwwroot\\mail.html");
 
 
@@ -304,6 +320,7 @@ namespace PL.Controllers
                 decimal? subtotal = 0;
                 decimal? precioTotal = 0;
                 int? cantidad = 0;
+                string productosInfo = "";
 
                 //se saca la lista de la sesion
                 var cart = HttpContext.Session.GetString("Session");
@@ -315,19 +332,27 @@ namespace PL.Controllers
                     descripcion = producto.SucursalProducto.Producto.Descripcion;
                     cantidad = producto.Cantidad;
                     producto.total = producto.Cantidad * producto.SucursalProducto.Producto.PrecioUnitario;
-                    precioTotal += producto.total; // Agrega el subtotal al total
+                    subtotal += producto.total; // Agrega el subtotal al total
+
+                    string productoHtml = $@"
+                             <h3>Producto: {nombre}</h3>
+                             <p>Descripción: {descripcion}</p>
+                             <span>Cantidad: {cantidad}</span>
+                             <p>Subtotal: {subtotal}</p>
+                         ";
+                    productosInfo += productoHtml;
+
+                    // Agregar el subtotal al total
+                    precioTotal += subtotal;
                 }
 
+                body = body.Replace("{{ProductosInfo}}", productosInfo);
                 body = body.Replace("{{Nombre}}", nombre);
                 body = body.Replace("{{Descripcion}}", descripcion);
                 body = body.Replace("{{Cantidad}}", cantidad.ToString());
-                body = body.Replace("{{Subtotal}}", precioTotal.ToString());
+                body = body.Replace("{{Total}}", precioTotal.ToString());
 
-
-
-
-
-
+                /*Mail*/
                 MailMessage mail = new MailMessage();
                 mail.From = new MailAddress(from, "Confirmación de compra");
                 mail.To.Add("pacheco09angel@gmail.com");

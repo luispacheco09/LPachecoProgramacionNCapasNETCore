@@ -122,7 +122,8 @@ Metodo VARCHAR(50) NOT NULL
 
 CREATE TABLE Venta(
 IdVenta  INT PRIMARY KEY IDENTITY(1,1),
-IdUsuario INT REFERENCES Usuario(IdUsuario),
+--IdUsuario INT REFERENCES Usuario(IdUsuario),
+IdUser NVARCHAR(450) REFERENCES AspNetUsers(Id),
 Total DECIMAL (18,2) NOT NULL,
 IdMetodoPago INT REFERENCES MetodoPago(IdMetodoPago),
 Fecha DATETIME
@@ -130,7 +131,7 @@ Fecha DATETIME
 
 CREATE TABLE VentaProducto(
 IdVentaProducto INT PRIMARY KEY IDENTITY(1,1),
---IdVenta INT REFERENCES Venta(IdVenta),
+IdVenta INT REFERENCES Venta(IdVenta),
 IdSucursalProducto INT REFERENCES SucursalProducto(IdSucursalProducto),
 Cantidad INT NOT NULL
 )
