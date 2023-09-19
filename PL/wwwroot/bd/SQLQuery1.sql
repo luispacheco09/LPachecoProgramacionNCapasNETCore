@@ -211,7 +211,7 @@ INSERT INTO [dbo].[Area]
            ('Mascotas'),
            ('Abarrotes'),
 		   ('Deportes')
-GO}
+GO
 --DEPARTAMENTO
 
 INSERT INTO [dbo].[Departamento]
@@ -292,3 +292,9 @@ INSERT INTO [dbo].[Proveedor]
            ,5529350954
            ,5512096543
            ,'www.proveedor-4.com')
+
+--Metodo de pago
+INSERT INTO [dbo].[MetodoPago]
+           ([Metodo])
+     VALUES
+           ('Tarjeta de debito')

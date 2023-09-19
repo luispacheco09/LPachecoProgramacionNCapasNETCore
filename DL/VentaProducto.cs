@@ -11,7 +11,7 @@ public partial class VentaProducto
 
     public int? IdSucursalProducto { get; set; }
 
-    public int Cantidad { get; set; }
+    public int? Cantidad { get; set; }
 
     public virtual SucursalProducto? IdSucursalProductoNavigation { get; set; }
 

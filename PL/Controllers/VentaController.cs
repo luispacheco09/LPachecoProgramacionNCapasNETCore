@@ -6,6 +6,8 @@ using System.Net.Mail;
 using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
+using ML;
+using DL;
 
 
 namespace PL.Controllers
@@ -13,16 +15,18 @@ namespace PL.Controllers
     public class VentaController : Controller
     {
         private UserManager<IdentityUser> userManager;// sin esta estancia no se puede hacer un crud y apunta a la tabla rol (RolManager)
-        public VentaController(UserManager<IdentityUser> userMgr) //contructor de la clase la inicializa, si no se inicializa no se tiene acceso a la base de datos
-        {
-            userManager = userMgr;
-        }
+        //public VentaController(UserManager<IdentityUser> userMgr) //contructor de la clase la inicializa, si no se inicializa no se tiene acceso a la base de datos
+        //{
+        //    userManager = userMgr ;
+        //}
         /*Traer configuracion del appsettings*/
         private readonly IConfiguration _configuration;
 
-        public VentaController(IConfiguration configuration)
+        public VentaController(IConfiguration configuration, UserManager<IdentityUser> userMgr)
         {
             _configuration = configuration;
+            userManager = userMgr;
+
         }
 
         public IActionResult Index()
@@ -253,7 +257,7 @@ namespace PL.Controllers
             Session session = service.Get(TempData["Session"].ToString());
             if (session.PaymentStatus == "paid")
             {
-                /*ID USUARIO ACTUAL*/
+                //ID USUARIO ACTUAL
                 string userId = userManager.GetUserId(User);
 
                 //Extraer la sesion
@@ -261,9 +265,24 @@ namespace PL.Controllers
 
                 if (!string.IsNullOrEmpty(cart))
                 {
+                    //Deserializar la sesion
                     List<ML.VentaProducto> carrito = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
+
+                    //Variable para sesion
                     decimal? precioTotal = 0;
 
+                    //recorrer la lista de la sesion para sacar su total
+                    foreach (var venta in carrito)
+                    {
+                        //Agregarlo a una venta 
+                        venta.total = venta.Cantidad * venta.SucursalProducto.Producto.PrecioUnitario;
+                        precioTotal += venta.total; // Agrega el subtotal al total
+                    }
+                    //Agregar a una venta
+                    ML.Result resultVenta = BL.Venta.Add(userId, precioTotal);
+
+
+                    //recorrer la lista de la sesion para sacar su contenido
                     foreach (var venta in carrito)
                     {
                         // Restar la cantidad en el carrito del stock total
@@ -277,11 +296,15 @@ namespace PL.Controllers
                             BL.SucursalProducto.UpdateStock(venta.SucursalProducto.IdSucursalProducto, producto.Stock);
                         }
 
-                        venta.total = venta.Cantidad * venta.SucursalProducto.Producto.PrecioUnitario;
-                        precioTotal += venta.total; // Agrega el subtotal al total
+                        //Se trae lo que se agrego a la venta y se agrega a venta-producto
+                        DL.Ventum productoventa = (DL.Ventum)resultVenta.Object;
+                        if (productoventa != null)
+                        {
+                            BL.Venta.AddVentaProducto(productoventa.IdVenta, producto.IdSucursalProducto, venta.Cantidad);
+                        }
                     }
-                    //@User.Identity?.Name
-                    BL.Venta.Add( userId,precioTotal);
+
+                    //Email
                     //return RedirectToAction("GetParametersEmail", "Email", new { listacarrito = carrito });
 
                     // Limpia la sesión después de restar el stock
@@ -322,35 +345,35 @@ namespace PL.Controllers
                 int? cantidad = 0;
                 string productosInfo = "";
 
-                //se saca la lista de la sesion
-                var cart = HttpContext.Session.GetString("Session");
-                List<ML.VentaProducto> carritoList = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
+                ////se saca la lista de la sesion
+                //var cart = HttpContext.Session.GetString("Session");
+                //List<ML.VentaProducto> carritoList = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
 
-                foreach (var producto in carritoList)
-                {
-                    nombre = producto.SucursalProducto.Producto.Nombre;
-                    descripcion = producto.SucursalProducto.Producto.Descripcion;
-                    cantidad = producto.Cantidad;
-                    producto.total = producto.Cantidad * producto.SucursalProducto.Producto.PrecioUnitario;
-                    subtotal += producto.total; // Agrega el subtotal al total
+                //foreach (var producto in carritoList)
+                //{
+                //    nombre = producto.SucursalProducto.Producto.Nombre;
+                //    descripcion = producto.SucursalProducto.Producto.Descripcion;
+                //    cantidad = producto.Cantidad;
+                //    producto.total = producto.Cantidad * producto.SucursalProducto.Producto.PrecioUnitario;
+                //    subtotal += producto.total; // Agrega el subtotal al total
 
-                    string productoHtml = $@"
-                             <h3>Producto: {nombre}</h3>
-                             <p>Descripción: {descripcion}</p>
-                             <span>Cantidad: {cantidad}</span>
-                             <p>Subtotal: {subtotal}</p>
-                         ";
-                    productosInfo += productoHtml;
+                //    string productoHtml = $@"
+                //             <h3>Producto: {nombre}</h3>
+                //             <p>Descripción: {descripcion}</p>
+                //             <span>Cantidad: {cantidad}</span>
+                //             <p>Subtotal: {subtotal}</p>
+                //         ";
+                //    productosInfo += productoHtml;
 
-                    // Agregar el subtotal al total
-                    precioTotal += subtotal;
-                }
+                //    // Agregar el subtotal al total
+                //    precioTotal += subtotal;
+                //}
 
-                body = body.Replace("{{ProductosInfo}}", productosInfo);
-                body = body.Replace("{{Nombre}}", nombre);
-                body = body.Replace("{{Descripcion}}", descripcion);
-                body = body.Replace("{{Cantidad}}", cantidad.ToString());
-                body = body.Replace("{{Total}}", precioTotal.ToString());
+                //body = body.Replace("{{ProductosInfo}}", productosInfo);
+                //body = body.Replace("{{Nombre}}", nombre);
+                //body = body.Replace("{{Descripcion}}", descripcion);
+                //body = body.Replace("{{Cantidad}}", cantidad.ToString());
+                //body = body.Replace("{{Total}}", precioTotal.ToString());
 
                 /*Mail*/
                 MailMessage mail = new MailMessage();
@@ -381,6 +404,86 @@ namespace PL.Controllers
             }
             return View();
         }
+        //public IActionResult Success()
+        //{
+        //    try
+        //    {
+        //        string user = _configuration.GetValue<string>("Email:UserName");
+        //        string password = _configuration.GetValue<string>("Email:PassWord");
+        //        string host = _configuration.GetValue<string>("Email:Host");
+        //        int port = int.Parse(_configuration.GetValue<string>("Email:Port"));
+        //        string from = _configuration.GetValue<string>("Email:UserName");
+
+        //        string body = System.IO.File.ReadAllText("C:\\Users\\digis\\Documents\\Luis Angel Pacheco Cruz\\LPachecoProgramacionNCapasNETCore\\PL\\wwwroot\\mail.html");
+
+
+        //        string? nombre = "";
+        //        string? descripcion = "";
+        //        decimal? subtotal = 0;
+        //        decimal? precioTotal = 0;
+        //        int? cantidad = 0;
+        //        string productosInfo = "";
+
+        //        //se saca la lista de la sesion
+        //        var cart = HttpContext.Session.GetString("Session");
+        //        List<ML.VentaProducto> carritoList = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
+
+        //        foreach (var producto in carritoList)
+        //        {
+        //            nombre = producto.SucursalProducto.Producto.Nombre;
+        //            descripcion = producto.SucursalProducto.Producto.Descripcion;
+        //            cantidad = producto.Cantidad;
+        //            producto.total = producto.Cantidad * producto.SucursalProducto.Producto.PrecioUnitario;
+        //            subtotal += producto.total; // Agrega el subtotal al total
+
+        //            string productoHtml = $@"
+        //                     <h3>Producto: {nombre}</h3>
+        //                     <p>Descripción: {descripcion}</p>
+        //                     <span>Cantidad: {cantidad}</span>
+        //                     <p>Subtotal: {subtotal}</p>
+        //                 ";
+        //            productosInfo += productoHtml;
+
+        //            // Agregar el subtotal al total
+        //            precioTotal += subtotal;
+        //        }
+
+        //        body = body.Replace("{{ProductosInfo}}", productosInfo);
+        //        body = body.Replace("{{Nombre}}", nombre);
+        //        body = body.Replace("{{Descripcion}}", descripcion);
+        //        body = body.Replace("{{Cantidad}}", cantidad.ToString());
+        //        body = body.Replace("{{Total}}", precioTotal.ToString());
+
+        //        /*Mail*/
+        //        MailMessage mail = new MailMessage();
+        //        mail.From = new MailAddress(from, "Confirmación de compra");
+        //        mail.To.Add("pacheco09angel@gmail.com");
+        //        mail.Subject = "Asunto gracias pro su compra";
+        //        mail.Body = body;
+        //        mail.IsBodyHtml = true;
+        //        mail.Priority = MailPriority.Normal;
+
+        //        /*SMTP*/
+        //        SmtpClient client = new SmtpClient();
+        //        client.Host = host;
+        //        client.Port = port;
+        //        client.EnableSsl = true;
+        //        client.UseDefaultCredentials = false;
+        //        NetworkCredential credentials = new NetworkCredential(user, password);
+        //        client.Credentials = credentials;
+        //        client.Send(mail);
+        //        ViewBag.Mensaje = "Se ha enviado un correo con la confimación de compra";
+
+        //        HttpContext.Session.Remove("Session");
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Mensaje = ex.Message;
+        //    }
+        //    return View();
+        //}
+
         public IActionResult Failed()
         {
             return View();

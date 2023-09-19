@@ -5,7 +5,7 @@ namespace DL;
 
 public partial class Ventum
 {
-    public int IdVenta { get; set; }
+    public int? IdVenta { get; set; }
 
     public string? IdUser { get; set; }
 

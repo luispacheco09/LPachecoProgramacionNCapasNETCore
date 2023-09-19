@@ -133,7 +133,7 @@ namespace BL
             }
             return result;
         }   
-        public static ML.Result GetProductbySucProduct( int IdSucursalProducto)
+        public static ML.Result GetProductbySucProduct( int? IdSucursalProducto)
         {
             ML.Result result = new ML.Result();
             try

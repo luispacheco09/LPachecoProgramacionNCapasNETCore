@@ -8,7 +8,7 @@ namespace ML
 {
     public class SucursalProducto
     {
-        public int IdSucursalProducto { get; set; }
+        public int? IdSucursalProducto { get; set; }
 
         public int? IdProducto { get; set; }
 
