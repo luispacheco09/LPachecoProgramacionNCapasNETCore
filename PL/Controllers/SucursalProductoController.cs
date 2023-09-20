@@ -4,9 +4,12 @@ using PL.Data;
 using System.Net.Mail;
 using System.Net;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PL.Controllers
 {
+    [Authorize]
+
     public class SucursalProductoController : Controller
     {
         private readonly IConfiguration _configuration;

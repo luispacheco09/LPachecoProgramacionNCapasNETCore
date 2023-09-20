@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ML;
 using PL.Data;
@@ -7,6 +8,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PL.Controllers
 {
+    [Authorize]
+
     public class ProductoController : Controller
     {
         private readonly ApplicationDbContext _context;

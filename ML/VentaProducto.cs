@@ -13,6 +13,7 @@ namespace ML
         public int? Cantidad { get; set; }
 
         public decimal? total { get; set; }
+        public decimal? SubTotal { get; set; }
         public List<object>? VentasProductos { get; set; }
         public ML.Venta? Venta { get; set; }//pendiente
     }

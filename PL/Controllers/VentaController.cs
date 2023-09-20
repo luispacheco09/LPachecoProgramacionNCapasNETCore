@@ -8,10 +8,14 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using ML;
 using DL;
-
+using Stripe;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PL.Controllers
 {
+    [Authorize]
+
     public class VentaController : Controller
     {
         private UserManager<IdentityUser> userManager;// sin esta estancia no se puede hacer un crud y apunta a la tabla rol (RolManager)
@@ -263,57 +267,58 @@ namespace PL.Controllers
                 //Extraer la sesion
                 var cart = HttpContext.Session.GetString("Session");
 
-                if (!string.IsNullOrEmpty(cart))
+                //if (!string.IsNullOrEmpty(cart))
+                //{
+                //Deserializar la sesion
+                List<ML.VentaProducto> carrito = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
+
+                //Variable para sesion
+                decimal? precioTotal = 0;
+
+                //recorrer la lista de la sesion para sacar su total
+                foreach (var venta in carrito)
                 {
-                    //Deserializar la sesion
-                    List<ML.VentaProducto> carrito = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
-
-                    //Variable para sesion
-                    decimal? precioTotal = 0;
-
-                    //recorrer la lista de la sesion para sacar su total
-                    foreach (var venta in carrito)
-                    {
-                        //Agregarlo a una venta 
-                        venta.total = venta.Cantidad * venta.SucursalProducto.Producto.PrecioUnitario;
-                        precioTotal += venta.total; // Agrega el subtotal al total
-                    }
-                    //Agregar a una venta
-                    ML.Result resultVenta = BL.Venta.Add(userId, precioTotal);
-
-
-                    //recorrer la lista de la sesion para sacar su contenido
-                    foreach (var venta in carrito)
-                    {
-                        // Restar la cantidad en el carrito del stock total
-                        ML.Result resultProductos = BL.SucursalProducto.GetProductbySucProduct(venta.SucursalProducto.IdSucursalProducto);
-                        ML.SucursalProducto producto = (ML.SucursalProducto)resultProductos.Object;
-
-                        if (producto != null)
-                        {
-                            producto.Stock -= venta.Cantidad;
-                            // Actualizar el stock en la base de datos
-                            BL.SucursalProducto.UpdateStock(venta.SucursalProducto.IdSucursalProducto, producto.Stock);
-                        }
-
-                        //Se trae lo que se agrego a la venta y se agrega a venta-producto
-                        DL.Ventum productoventa = (DL.Ventum)resultVenta.Object;
-                        if (productoventa != null)
-                        {
-                            BL.Venta.AddVentaProducto(productoventa.IdVenta, producto.IdSucursalProducto, venta.Cantidad);
-                        }
-                    }
-
-                    //Email
-                    //return RedirectToAction("GetParametersEmail", "Email", new { listacarrito = carrito });
-
-                    // Limpia la sesión después de restar el stock
-                    //HttpContext.Session.Remove("Session");
+                    //Agregarlo a una venta 
+                    venta.total = venta.Cantidad * venta.SucursalProducto.Producto.PrecioUnitario;
+                    precioTotal += venta.total; // Agrega el subtotal al total
                 }
+                //Agregar a una venta
+                ML.Result resultVenta = BL.Venta.Add(userId, precioTotal);
+                /// Se trae lo que se agrego a la venta y se agrega a venta - producto
+                DL.Ventum productoventa = (DL.Ventum)resultVenta.Object;
+
+                //recorrer la lista de la sesion para sacar su contenido
+                foreach (var venta in carrito)
+                {
+                    // Restar la cantidad en el carrito del stock total
+                    ML.Result resultProductos = BL.SucursalProducto.GetProductbySucProduct(venta.SucursalProducto.IdSucursalProducto);
+                    ML.SucursalProducto producto = (ML.SucursalProducto)resultProductos.Object;
+
+                    if (producto != null)
+                    {
+                        producto.Stock -= venta.Cantidad;
+                        // Actualizar el stock en la base de datos
+                        BL.SucursalProducto.UpdateStock(venta.SucursalProducto.IdSucursalProducto, producto.Stock);
+                    }
+
+                    ////Se trae lo que se agrego a la venta y se agrega a venta-producto
+                    //DL.Ventum productoventa = (DL.Ventum)resultVenta.Object;
+                    if (productoventa != null)
+                    {
+                        BL.Venta.AddVentaProducto(productoventa.IdVenta, producto.IdSucursalProducto, venta.Cantidad);
+                    }
+                }
+
+                //Email
+                //return RedirectToAction("GetParametersEmail", "Email", new { listacarrito = carrito });
+
+                // Limpia la sesión después de restar el stock
+                //HttpContext.Session.Remove("Session");
+                //}
 
                 var transaction = session.PaymentIntentId.ToString();
                 /**/
-                return RedirectToAction("Success", "Venta");
+                return RedirectToAction("Success", "Venta", new { idVenta = productoventa.IdVenta });
 
 
                 //return View("Success");
@@ -325,7 +330,7 @@ namespace PL.Controllers
         {
             return View();
         }
-        public IActionResult Success()
+        public IActionResult Success(int idVenta)
         {
             try
             {
@@ -335,51 +340,20 @@ namespace PL.Controllers
                 int port = int.Parse(_configuration.GetValue<string>("Email:Port"));
                 string from = _configuration.GetValue<string>("Email:UserName");
 
-                string body = System.IO.File.ReadAllText("C:\\Users\\digis\\Documents\\Luis Angel Pacheco Cruz\\LPachecoProgramacionNCapasNETCore\\PL\\wwwroot\\mail.html");
+                string body = System.IO.File.ReadAllText("C:\\Users\\digis\\Documents\\Luis Angel Pacheco Cruz\\LPachecoProgramacionNCapasNETCore\\PL\\Views\\Email\\Email.html");
+                //        string body = System.IO.File.ReadAllText("C:\\Users\\digis\\Documents\\Luis Angel Pacheco Cruz\\LPachecoProgramacionNCapasNETCore\\PL\\wwwroot\\mail.html");
 
+                string userName = userManager.GetUserName(User);
 
-                string? nombre = "";
-                string? descripcion = "";
-                decimal? subtotal = 0;
-                decimal? precioTotal = 0;
-                int? cantidad = 0;
-                string productosInfo = "";
-
-                ////se saca la lista de la sesion
-                //var cart = HttpContext.Session.GetString("Session");
-                //List<ML.VentaProducto> carritoList = JsonSerializer.Deserialize<List<ML.VentaProducto>>(cart);
-
-                //foreach (var producto in carritoList)
-                //{
-                //    nombre = producto.SucursalProducto.Producto.Nombre;
-                //    descripcion = producto.SucursalProducto.Producto.Descripcion;
-                //    cantidad = producto.Cantidad;
-                //    producto.total = producto.Cantidad * producto.SucursalProducto.Producto.PrecioUnitario;
-                //    subtotal += producto.total; // Agrega el subtotal al total
-
-                //    string productoHtml = $@"
-                //             <h3>Producto: {nombre}</h3>
-                //             <p>Descripción: {descripcion}</p>
-                //             <span>Cantidad: {cantidad}</span>
-                //             <p>Subtotal: {subtotal}</p>
-                //         ";
-                //    productosInfo += productoHtml;
-
-                //    // Agregar el subtotal al total
-                //    precioTotal += subtotal;
-                //}
-
-                //body = body.Replace("{{ProductosInfo}}", productosInfo);
-                //body = body.Replace("{{Nombre}}", nombre);
-                //body = body.Replace("{{Descripcion}}", descripcion);
-                //body = body.Replace("{{Cantidad}}", cantidad.ToString());
-                //body = body.Replace("{{Total}}", precioTotal.ToString());
+                int IdVenta = idVenta;
+                body = body.Replace("{{IdVenta}}", IdVenta.ToString());
+                body = body.Replace("{{UserName}}", userName.ToString());
 
                 /*Mail*/
                 MailMessage mail = new MailMessage();
                 mail.From = new MailAddress(from, "Confirmación de compra");
                 mail.To.Add("pacheco09angel@gmail.com");
-                mail.Subject = "Asunto gracias pro su compra";
+                mail.Subject = "Gracias por su compra";
                 mail.Body = body;
                 mail.IsBodyHtml = true;
                 mail.Priority = MailPriority.Normal;

@@ -15,7 +15,7 @@ namespace ML
 
         public int? IdMetodoPago { get; set; }
 
-        public DateTime? Fecha { get; set; }
+        public string? Fecha { get; set; }
         public  DL.AspNetUser? User { get; set; }//pendiente
         public List<object> Ventas { get; set; }
     }

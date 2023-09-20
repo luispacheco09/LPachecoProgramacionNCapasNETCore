@@ -20,6 +20,8 @@
                 <p>Gracias por su compra.</p>
                 <p>@ViewBag.Mensaje</p>
                 <button class="btn btn-outline-success">Regresar</button>
+                @Html.ActionLink("Regresar", "GetAllProducto", "Venta", new { @class = "btn btn-outline-success" })
+
             </div>
         </div>
     </div>

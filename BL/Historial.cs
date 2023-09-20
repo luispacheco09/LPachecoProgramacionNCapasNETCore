@@ -1,4 +1,5 @@
 ﻿using DL;
+using ML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace BL
 {
     public class Historial
     {
-        public static ML.Result GetAll()
+        public static ML.Result GetAll(string UserId)
         {
             ML.Result result = new ML.Result();
             try
@@ -18,6 +19,7 @@ namespace BL
                 using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
                 {
                     var listaHistorial = (from venta in context.Venta
+                                          where venta.IdUser == UserId
                                           select new
                                           {
                                               IdVenta = venta.IdVenta,
@@ -35,7 +37,8 @@ namespace BL
                             venta.IdVenta = obj.IdVenta;
                             venta.Total = obj.Total;
                             venta.IdMetodoPago = obj.IdMetodoPago;
-                            venta.Fecha = obj.Fecha;
+                            //venta.Fecha = obj.Fecha;
+                            venta.Fecha = (obj.Fecha != null) ? obj.Fecha.Value.ToString("dd-MM-yyyy") : "0";
 
                             result.Objects.Add(venta);
                         }
@@ -81,7 +84,8 @@ namespace BL
                                               ProductoNombre = producto.Nombre,
                                               ProductoImg = producto.Imagen,
                                               ProductoPrecio = producto.PrecioUnitario,
-                                              ProductoDescripcion = producto.Descripcion
+                                              ProductoDescripcion = producto.Descripcion,
+                                              Subtotal = ventaProductDL.Cantidad * producto.PrecioUnitario
                                           }).ToList();
                     if (listaHistorial != null && listaHistorial.Count > 0)
                     {
@@ -102,6 +106,9 @@ namespace BL
                             ventaProducto.SucursalProducto.Producto.PrecioUnitario = obj.ProductoPrecio;
                             ventaProducto.SucursalProducto.Producto.Imagen = obj.ProductoImg;
                             ventaProducto.SucursalProducto.Producto.Descripcion = obj.ProductoDescripcion;
+
+                            ventaProducto.SubTotal = obj.Subtotal;
+
 
                             result.Objects.Add(ventaProducto);
                         }
