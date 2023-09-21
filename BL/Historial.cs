@@ -60,7 +60,7 @@ namespace BL
             return result;
         }
 
-        public static ML.Result GetProductoHistorial(int IdVenta)
+        public static ML.Result GetProductoHistorial(int IdVenta, string userId)
         {
             ML.Result result = new ML.Result();
             try
@@ -72,7 +72,7 @@ namespace BL
                                           join sucursal in context.Sucursals on  sucursalP.IdSucursal equals sucursal.IdSucursal
                                           join producto in context.Productos on  sucursalP.IdProducto equals producto.IdProducto
                                           join venta in context.Venta on ventaProductDL.IdVenta equals venta.IdVenta
-                                          where ventaProductDL.IdVenta == IdVenta
+                                          where ventaProductDL.IdVenta == IdVenta && venta.IdUser == userId
                                           select new
                                           {
                                               IdVentaP = ventaProductDL.IdVentaProducto,

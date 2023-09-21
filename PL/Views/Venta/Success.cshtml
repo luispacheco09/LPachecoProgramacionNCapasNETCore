@@ -19,9 +19,9 @@
                 <h1>¡Pago exitoso!</h1>
                 <p>Gracias por su compra.</p>
                 <p>@ViewBag.Mensaje</p>
-                <button class="btn btn-outline-success">Regresar</button>
-                @Html.ActionLink("Regresar", "GetAllProducto", "Venta", new { @class = "btn btn-outline-success" })
-
+                @* <button class="btn btn-outline-success">Regresar</button> *@
+                @* @Html.ActionLink("Regresar", "GetAllProducto", "Venta", new { @class = "btn btn-outline-success" }) *@
+                <a class="btn btn-outline-success " href="@Url.Action("GetAllProducto", "Venta")">Regresar</a>
             </div>
         </div>
     </div>

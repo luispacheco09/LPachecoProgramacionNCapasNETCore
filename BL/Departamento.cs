@@ -51,7 +51,7 @@ namespace BL
 
             return result;
         }
-        public static ML.Result GetByIdArea(int IdArea)
+        public static ML.Result GetByIdArea(int? IdArea)
         {
             ML.Result result = new ML.Result();
 

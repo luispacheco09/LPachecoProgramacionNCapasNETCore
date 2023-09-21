@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace PL.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
 
     public class SucursalProductoController : Controller
     {

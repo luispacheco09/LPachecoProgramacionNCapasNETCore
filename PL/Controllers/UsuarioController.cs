@@ -32,13 +32,13 @@ namespace PL.Controllers
             {
                 IdentityResult result;
      
-                var rolExists = await userManager.FindByIdAsync(user.Id);
+                var userExists = await userManager.FindByIdAsync(user.Id);
 
-                if (rolExists == null)
+                if (userExists == null)
                 {
                     //Add
                     //result = await userManager.CreateAsync(new IdentityUser(user.UserName));
-                    result = await userManager.CreateAsync(user);
+                    result = await userManager.CreateAsync(new IdentityUser(user.PhoneNumber));
                     if (result.Succeeded)
                     {
                         return RedirectToAction("GetAll");
@@ -49,7 +49,7 @@ namespace PL.Controllers
                 }
                 else
                 {
-                    result = await userManager.UpdateAsync(rolExists);
+                    result = await userManager.UpdateAsync(userExists);
                     if (result.Succeeded)
                     {
                         return RedirectToAction("GetAll");
@@ -64,15 +64,15 @@ namespace PL.Controllers
         }
 
 
-        public async Task<IActionResult> Form(Guid? IdUser)
+        public async Task<IActionResult> Form(Guid? IdUsuario)
         {
-            if (IdUser == null)
+            if (IdUsuario == null)
             {
                 return View(new IdentityUser());
             }
             else
             {
-                var users = await userManager.FindByIdAsync(IdUser.ToString());
+                var users = await userManager.FindByIdAsync(IdUsuario.ToString());
                 return View(users);
             }
         }

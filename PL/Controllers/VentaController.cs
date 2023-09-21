@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace PL.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "User")]
 
     public class VentaController : Controller
     {
@@ -39,6 +39,27 @@ namespace PL.Controllers
         }
         public IActionResult GetAllProducto()
         {
+            //int? area = HttpContext.Session.GetInt32("ddlArea");
+            //int? departamento = HttpContext.Session.GetInt32("ddlDepartamento");
+
+            //ML.Producto producto = new ML.Producto();
+            //ML.Result resultDepartamento = BL.Departamento.GetAll();
+            //producto.Departamento = new ML.Departamento();
+            //producto.Departamento.Area = new ML.Area();
+
+            //if (area == null && departamento == null)
+            //{
+            //    // Si la sesión es nula se crea una nueva lista de productos
+            //    ML.Result resultArea = BL.Area.GetAll();
+            //    producto.Departamento.Area.Areas = resultArea.Objects;
+            //}
+            //else
+            //{
+            //    producto.Departamento.IdDepartamento = departamento;
+            //    producto.Departamento.Area.IdArea =area;
+
+            //}
+
             ML.Producto producto = new ML.Producto();
 
             ML.Result resultDepartamento = BL.Departamento.GetAll();
@@ -48,10 +69,14 @@ namespace PL.Controllers
             producto.Departamento.Area = new ML.Area();
             producto.Departamento.Area.Areas = resultArea.Objects;
 
+
             return View(producto);
         }
         public IActionResult GetProducto(int IdDepartamento)
         {
+            // Guarda el departamento en la sesión
+            HttpContext.Session.SetInt32("ddlDepartamento", IdDepartamento);
+
             ML.SucursalProducto productoSuc = new ML.SucursalProducto();
             ML.Result resultSucursal = BL.SucursalProducto.GetProductbySucDepto(IdDepartamento);
             productoSuc.SucuralesProductos = resultSucursal.Objects;
@@ -72,6 +97,9 @@ namespace PL.Controllers
         //}
         public JsonResult GetDepartamentosList(int IdArea)
         {
+            // Guarda el area en la sesión
+            HttpContext.Session.SetInt32("ddlArea", IdArea);
+
             ML.Result resultDepartamentos = BL.Departamento.GetByIdArea(IdArea);
             return Json(resultDepartamentos.Objects);
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,8 @@ using System.Data;
 
 namespace PL.Controllers
 {
+    [Authorize(Roles = "Admin")]
+
     public class RoleController : Controller
     {
         private RoleManager<IdentityRole> roleManager;// sin esta estancia no se puede hacer un crud y apunta a la tabla rol (RolManager)

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PL.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
 
     public class SucursalController : Controller
     {

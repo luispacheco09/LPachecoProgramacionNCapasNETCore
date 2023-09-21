@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PL.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Admin")]
 
     public class ProductoController : Controller
     {
@@ -94,7 +94,7 @@ namespace PL.Controllers
                 producto.Departamento.Departamentos = resultDepartamento.Objects;//temporalDepartamento
 
                 //se inicializa arriba area
-                int IdArea = producto.Departamento.Area.IdArea = ((ML.Producto)result.Object).Departamento.Area.IdArea;//temporalArea
+                int? IdArea = producto.Departamento.Area.IdArea = ((ML.Producto)result.Object).Departamento.Area.IdArea;//temporalArea
                 producto.Departamento.Area.Areas = resultArea.Objects;
                 ML.Result resultIdArea = BL.Departamento.GetByIdArea(IdArea);
                 producto.Departamento.Departamentos = resultIdArea.Objects;

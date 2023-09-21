@@ -2,9 +2,45 @@
 @model AccessDeniedModel
 @{
     ViewData["Title"] = "Access denied";
+    Layout = null;
 }
 
-<header>
+@* <header>
     <h1 class="text-danger">@ViewData["Title"]</h1>
     <p class="text-danger">You do not have access to this resource.</p>
-</header>
+</header> *@
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round"
+          rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins"
+          rel="stylesheet" />
+
+    <link href="~/css/Access/AccessDenied.css"
+          rel="stylesheet" />
+</head>
+
+<body>
+    <div class="message">No estas autorizado.</div>
+    <div class="message2">
+        Intentaste acceder a una página para la que no tienes los permisos necesarios.
+    </div>
+    <div class="button">
+        <a class="button-regresar" href="@Url.Action("Index","Home")">Regresar</a>
+        @* <a class="btn btn-outline-danger glyphicon glyphicon-trash" href="@Url.Action("Delete", "Producto", new { IdProducto = producto.IdProducto})" onclick="return confirm('Estas seguro que deseas eliminar este registro?');"><img src="/Images/remove.png"></a></> *@
+
+    </div>
+    <div class="container">
+        <div class="neon">403</div>
+        <div class="door-frame">
+            <div class="door">
+                <div class="rectangle"></div>
+                <div class="handle"></div>
+                <div class="window">
+                    <div class="eye"></div>
+                    <div class="eye eye2"></div>
+                    <div class="leaf"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
