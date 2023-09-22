@@ -22,35 +22,46 @@
                                     <h4 class="card-title">@producto.Producto.Nombre</h4>
                                     <h6 class="text-primary mb-1 pb-3">Precio @producto.Producto.PrecioUnitario</h6>
                                 </div>
-
-                                <div class="text-center">
-                                    <div class="d-flex flex-column mb-4">
-                                        <span>En stok: @producto.Stock</span>
+                                @if (producto.Stock == 0)
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        <div class="text-center">
+                                            ¡¡No hay stock!!
+                                        </div>
                                     </div>
-
+                                    @* <div class="text-center">
+                                        <div class="d-flex flex-column mb-4 alert alert-danger" role="alert">
+                                            <span>
+                                                ¡¡Sin stock!!
+                                            </span>
+                                        </div>
+                                    </div> *@
+                                }
+                                else
+                                {
+                                    <div class="text-center">
+                                        <div class="d-flex flex-column mb-4">
+                                            <span>En stok: @producto.Stock</span>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="text-center">
                                     <div class="d-flex flex-column mb-4">
                                         <span>@producto.Producto.Descripcion</span>
                                     </div>
                                 </div>
 
-                                <div class="d-flex flex-row">
-                                    @*  <button type="button" class="btn btn-primary flex-fill me-1" data-mdb-ripple-color="dark">
-                            Learn more
-                            </button>*@
-                                    @*<button type="button" class="btn btn-danger flex-fill ms-1"><i class="fa-solid fa-cart-shopping"></i>Agregar al carrito</button>*@
-                                    @* <form method="post" action="@Url.Action("AddCart", "Venta")">
-                                        <input name="IdProducto" value="@producto.IdSucursalProducto" />
-                                        <div class="col-md-4">
-                                            <label asp-for="IdSucursalProducto"  class="hidden"></label>
-                                            <input asp-for="IdSucursalProducto"  class="form-control hidden" />
-                                        </div>
-                                        <button type="submit" class="btn btn-danger flex-fill ms-1">
-                                            <i class="fa-solid fa-cart-shopping"></i> Agregar al carrito
-                                        </button>
-                                    </form> *@
+                                @if (producto.Stock == 0)
+                                {
 
-                                    <a class="btn btn-primary flex-fill ms-1" href="@Url.Action("AddCart", "Venta", new { IdSucursalProducto = producto.IdSucursalProducto })">Agregar al carrito</a>
-                                </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex flex-row">
+                                        <a class="btn btn-primary flex-fill ms-1" href="@Url.Action("AddCart", "Venta", new { IdSucursalProducto = producto.IdSucursalProducto })">Agregar al carrito</a>
+                                    </div>
+                                }
+                                
                             </div>
                         </div>
                     </div>

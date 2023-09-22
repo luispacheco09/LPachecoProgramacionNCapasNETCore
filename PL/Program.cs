@@ -22,10 +22,12 @@ namespace PL
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddDistributedMemoryCache();
             //habilitar las sessions
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.Cookie.Name = "AspNetCore.Session";
+                options.IdleTimeout = TimeSpan.FromSeconds(15);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });

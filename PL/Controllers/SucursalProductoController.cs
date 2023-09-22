@@ -37,20 +37,8 @@ namespace PL.Controllers
         {
             ML.SucursalProducto sucursalp = new ML.SucursalProducto();
             ML.Result resultSucursal = BL.SucursalProducto.GetbySucursal(IdSucursal);
-            // configuración del app
-            bool mostrarProductosSinStock = _configuration.GetValue<bool>("AppSetings:MostrarProductosSinStock");
-            if (!mostrarProductosSinStock)
-            {
-                //sucursalp.SucuralesProductos = resultSucursal.Objects.Where(p => p.Stock >0);
-                sucursalp.SucuralesProductos = resultSucursal.Objects;
 
-
-            }
-            else
-            {
-                sucursalp.SucuralesProductos = resultSucursal.Objects;
-
-            }
+            sucursalp.SucuralesProductos = resultSucursal.Objects;
 
             return PartialView("ResulltadoSucursalP", sucursalp);
         }

@@ -72,7 +72,7 @@ namespace PL.Controllers
 
             return View(producto);
         }
-        public IActionResult GetProducto(int IdDepartamento)
+        public IActionResult GetProducto1(int IdDepartamento)
         {
             // Guarda el departamento en la sesión
             HttpContext.Session.SetInt32("ddlDepartamento", IdDepartamento);
@@ -83,18 +83,35 @@ namespace PL.Controllers
             return PartialView("GetProductos", productoSuc);
         }
 
-        //public IActionResult GetProducto(int IdDepartamento)
-        //{
-        //    bool sinStock = _configuration.GetValue<bool>("MostrarProductosSinStock");
-        //    ML.SucursalProducto productoSuc = new ML.SucursalProducto();
-        //    ML.Result resultSucursal = BL.SucursalProducto.GetProductbySucDepto(IdDepartamento);
-        //    if (!sinStock)
-        //    {
+        public IActionResult GetProducto(int IdDepartamento)
+        {
+            bool sinStock = _configuration.GetValue<bool>("AppSettings:MostrarProductosSinStock");
+            ML.SucursalProducto productoSuc = new ML.SucursalProducto();
+            ML.Result resultSucursal;
+            resultSucursal = BL.SucursalProducto.GetProductbySucDepto(IdDepartamento);
+            productoSuc.SucuralesProductos = resultSucursal.Objects;
 
-        //    }
-        //    productoSuc.SucuralesProductos = resultSucursal.Objects;
-        //    return PartialView("GetProductos", productoSuc);
-        //}
+            if (sinStock)//Mostrar
+            {
+                return PartialView("GetProductos", productoSuc);
+
+            }
+            else// No Mostrar
+            {
+                foreach (ML.SucursalProducto item in productoSuc.SucuralesProductos)
+                {
+                    if (item.Stock == 0)
+                    {
+                        resultSucursal = BL.SucursalProducto.GetProductbySucDeptoSinStock(IdDepartamento);
+
+                    }
+                }
+                productoSuc.SucuralesProductos = resultSucursal.Objects;
+                return PartialView("GetProductos", productoSuc);
+
+            }
+            //return PartialView("GetProductos", productoSuc);
+        }
         public JsonResult GetDepartamentosList(int IdArea)
         {
             // Guarda el area en la sesión

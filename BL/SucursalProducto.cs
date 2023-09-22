@@ -132,7 +132,72 @@ namespace BL
                 result.ErrorMessage = ex.Message;
             }
             return result;
-        }   
+        }
+        public static ML.Result GetProductbySucDeptoSinStock(int IdDepartamento)
+        {
+            ML.Result result = new ML.Result();
+            try
+            {
+                using (DL.LpachecoProgramacionNcapasNetcoreContext context = new DL.LpachecoProgramacionNcapasNetcoreContext())
+                {
+                    var listaSucursal = (from sucursalPDL in context.SucursalProductos
+                                         join sucursal in context.Sucursals on sucursalPDL.IdSucursal equals sucursal.IdSucursal
+                                         join producto in context.Productos on sucursalPDL.IdProducto equals producto.IdProducto
+                                         where sucursalPDL.IdSucursal == 3 && producto.IdDepartamento == IdDepartamento && sucursalPDL.Stock > 0
+                                         select new
+                                         {
+                                             IdSucursalProducto = sucursalPDL.IdSucursalProducto,
+                                             IdSucursal = sucursalPDL.IdSucursal,
+                                             IdProducto = sucursalPDL.IdProducto,
+                                             Stock = sucursalPDL.Stock,
+                                             ProductoNombre = producto.Nombre,
+                                             Descripcion = producto.Descripcion,
+                                             idDepartamento = producto.IdDepartamento,
+                                             Imagen = producto.Imagen,
+                                             Modelo = producto.Modelo,
+                                             PrecioUnitario = producto.PrecioUnitario,
+                                             SucursalNombre = sucursal.Nombre
+                                         });
+
+                    if (listaSucursal != null && listaSucursal.ToList().Count > 0)
+                    {
+                        result.Objects = new List<object>();
+                        foreach (var obj in listaSucursal)
+                        {
+                            ML.SucursalProducto sucursalp = new ML.SucursalProducto();
+                            sucursalp.IdSucursalProducto = obj.IdSucursalProducto;
+                            sucursalp.Stock = obj.Stock;
+
+                            sucursalp.Sucursal = new ML.Sucursal();
+                            sucursalp.Sucursal.IdSucursal = obj.IdSucursal.Value;
+                            sucursalp.Sucursal.Nombre = obj.SucursalNombre;
+                            sucursalp.Producto = new ML.Producto();
+                            sucursalp.Producto.IdProducto = obj.IdProducto.Value;
+                            sucursalp.Producto.Nombre = obj.ProductoNombre;
+                            sucursalp.Producto.Descripcion = obj.Descripcion;
+                            sucursalp.Producto.Imagen = obj.Imagen;
+                            sucursalp.Producto.Modelo = obj.Modelo;
+                            sucursalp.Producto.PrecioUnitario = obj.PrecioUnitario;
+
+                            result.Objects.Add(sucursalp);
+                        }
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se encontraron datos de los poductos"; ;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Correct = false;
+                result.ErrorMessage = ex.Message;
+            }
+            return result;
+        }
+
         public static ML.Result GetProductbySucProduct( int? IdSucursalProducto)
         {
             ML.Result result = new ML.Result();

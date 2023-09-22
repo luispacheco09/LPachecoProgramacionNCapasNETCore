@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -212,6 +213,22 @@ namespace BL
                     }
                 }
 
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException DbUpdateEx)
+            {
+                if (DbUpdateEx.InnerException is SqlException sqlEx)
+                {
+                    if (sqlEx.Number == 547)//Error especifico para violacion de llave foranea
+                    {
+                        result.Correct = false;
+                        result.ErrorMessage = "No se puede eliminar la sucursal ya que esta asociado a uno o más productos. Elimine los productos primero.";
+                    }
+                }
+                else
+                {
+                    result.Correct = false;
+                    result.ErrorMessage = "No se pudieron guardar los cambios de la sucursal";
+                }
             }
             catch (Exception ex)
             {
